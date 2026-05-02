@@ -1071,7 +1071,7 @@
     } else {
       utt.lang = 'la';
     }
-    utt.rate = 0.7;        // deliberately slow so Year 7 students can follow each word
+    utt.rate = 0.4;        // very slow for Year 7 — close to the browser-imposed minimum
     utt.pitch = 1.0;
     utt.onend = () => {
       if (sourceBtn) sourceBtn.classList.remove('playing');

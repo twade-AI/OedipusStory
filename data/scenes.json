@@ -59,8 +59,34 @@
         "hintEn": "It is not a god. Think about the ages of a human's life."
       }
     ],
-    "next": "start",
+    "next": "arrival",
     "sceneImage": "images/scenes/sphinx_lair.jpg"
+  },
+  "arrival": {
+    "title": "Adventus",
+    "titleEn": "The Arrival",
+    "chapter": "Prologus",
+    "setting": "the gates of Thebes — citizens cheering — the queen extending her hand",
+    "latin": "ad portas Thebarum venis. cives clamant: 'salve, servator! Sphingem vicisti!' regina Iocasta ad te venit. 'iuvenis fortis, rex noster mortuus est. tu rex noster eris. uxorem me duces.' tu rex Thebarum factus es. tu felicissimus es.",
+    "question": "iam rex es. quid cogitas?",
+    "questionEn": "Now you are king. What are you thinking?",
+    "chars": [
+      "oedipus",
+      "iocasta"
+    ],
+    "choices": [
+      {
+        "latin": "felicissimus sum. urbem servabo.",
+        "en": "Joy — I will save the city.",
+        "next": "start",
+        "tags": [
+          "pious",
+          "compassion"
+        ],
+        "clue": "rex novus laetus"
+      }
+    ],
+    "sceneImage": "images/scenes/approach.jpg"
   },
   "start": {
     "title": "Thebae in periculo",
@@ -188,6 +214,41 @@
           "confront",
           "denial"
         ]
+      },
+      {
+        "latin": "vates, dic mihi: cur caecus es?",
+        "en": "Ask the prophet how he became blind.",
+        "next": "tiresias_origin",
+        "clue": "rex de vate quaerit",
+        "tags": [
+          "patient",
+          "compassion"
+        ]
+      }
+    ],
+    "sceneImage": "images/scenes/oracle_chamber.jpg"
+  },
+  "tiresias_origin": {
+    "title": "Vates olim",
+    "titleEn": "The prophet's story",
+    "chapter": "Capitulum II",
+    "setting": "the lamp-lit chamber — the prophet remembering",
+    "latin": "Tiresias dicit: 'olim iuvenis eram. in monte deam vidi quam non videre debui. dea irata oculos meos cepit, sed mentem mihi dedit. nunc caecus sum sed multa video. tu, rex, oculos habes — sed veritatem non vides.'",
+    "question": "vates te accusat. quid facis?",
+    "questionEn": "The prophet rebukes you. What now?",
+    "chars": [
+      "tiresias",
+      "oedipus"
+    ],
+    "choices": [
+      {
+        "latin": "audacia tua me offendit! dic, quis necavit Laium?",
+        "en": "Force him to name the killer.",
+        "next": "tiresias_accuses",
+        "tags": [
+          "confront"
+        ],
+        "clue": "rex vatem cogit"
       }
     ],
     "sceneImage": "images/scenes/oracle_chamber.jpg"
@@ -433,7 +494,7 @@
       {
         "latin": "ego in trivio virum necavi olim...",
         "en": "Confess: 'I once killed a man at a crossroads.'",
-        "next": "messenger_arrives",
+        "next": "crossroads_flashback",
         "clue": "rex confessus est",
         "tags": [
           "pious",
@@ -451,6 +512,30 @@
       }
     ],
     "sceneImage": "images/scenes/jocasta_chamber.jpg"
+  },
+  "crossroads_flashback": {
+    "title": "Memoria trivii",
+    "titleEn": "Memory of the crossroads",
+    "chapter": "Capitulum IV",
+    "setting": "years ago — a flashback — the road from Delphi",
+    "latin": "olim, iuvenis, ad oraculum eram. Apollo dixit: 'patrem necabis, matrem in matrimonium duces.' perterritus Corintho fugi. in trivio inter Thebas et Delphos virum senem inveni. ille me percussit. iratus eram. ego eum necavi. nemo mihi notus erat. heu — quis erat ille senex?",
+    "question": "et nunc — ille senex, quis erat?",
+    "questionEn": "And now — that old man, who was he?",
+    "chars": [
+      "oedipus"
+    ],
+    "choices": [
+      {
+        "latin": "heu! Laius erat!",
+        "en": "Woe — that was Laius!",
+        "next": "messenger_arrives",
+        "tags": [
+          "pious"
+        ],
+        "clue": "rex Laium ipse necavit"
+      }
+    ],
+    "sceneImage": "images/scenes/crossroads.jpg"
   },
   "messenger_arrives": {
     "title": "Nuntius ex Corintho",
@@ -634,7 +719,7 @@
       {
         "latin": "ego ipse poenam meam dico. exsulabo. urbem servabo.",
         "en": "Pronounce your own exile — save Thebes by leaving.",
-        "next": "ending_dignity",
+        "next": "antigone_farewell",
         "clue": "rex sui ipsius iudex",
         "tags": [
           "pious",
@@ -644,6 +729,31 @@
       }
     ],
     "sceneImage": "images/scenes/megaron.jpg"
+  },
+  "antigone_farewell": {
+    "title": "Antigona pia",
+    "titleEn": "Faithful Antigone",
+    "chapter": "Capitulum VIII",
+    "setting": "the inner palace — the king with his small daughter at his knee",
+    "latin": "Antigona, filia tua, ad te venit. parva est sed fortis. dicit: 'pater, ego tecum eo. tu non solus exsulabis. ego te ducam. ego oculos tibi ero.' tu fles sed laetus es. dei pii sunt.",
+    "question": "responde Antigonae:",
+    "questionEn": "Answer Antigone:",
+    "chars": [
+      "oedipus"
+    ],
+    "choices": [
+      {
+        "latin": "filia mea, vere fortis es. nunc imus.",
+        "en": "My faithful daughter — let us go.",
+        "next": "ending_dignity",
+        "tags": [
+          "compassion",
+          "pious"
+        ],
+        "clue": "Antigona patrem comitatur"
+      }
+    ],
+    "sceneImage": "images/scenes/eumenides_grove.jpg"
   },
   "ending_hubris": {
     "title": "Furor regis",
