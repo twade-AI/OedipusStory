@@ -1,0 +1,345 @@
+{
+  "_schema": {
+    "_description": "Production / retrieval drills keyed by chapter label. Three drills per chapter: typically one translate-to-Latin, one form-picker, one vocab. Students complete them in the Exercitatio tab; chapters lock until the student has visited a scene from that chapter.",
+    "_kinds": {
+      "translate": "English prompt -> pick the right Latin",
+      "form": "Latin sentence with a blank -> pick the correct form",
+      "vocab": "Latin word -> pick the right English meaning"
+    },
+    "_fields": {
+      "kind": "translate | form | vocab",
+      "promptEn": "Question in English",
+      "promptLa": "(form/vocab) Latin sentence or word being asked about",
+      "options": "Array of 4 options",
+      "correct": "Index of the correct option (0-3)",
+      "explain": "Short explanation shown after answering"
+    }
+  },
+
+  "Capitulum I": [
+    {
+      "kind": "translate",
+      "promptEn": "How would you say 'I am Oedipus, king of Thebes'?",
+      "options": [
+        "ego sum Oedipus, rex Thebarum.",
+        "ego es Oedipus, regem Thebis.",
+        "tu es Oedipus, rex Thebarum.",
+        "ego sum Oedipus, regem Thebas."
+      ],
+      "correct": 0,
+      "explain": "ego sum = 'I am' (1st person singular of esse). 'rex Thebarum' = 'king of Thebes' (Thebarum is genitive plural)."
+    },
+    {
+      "kind": "form",
+      "promptEn": "Pick the correct verb form to mean 'troubles' (the subject is pestis, 'plague').",
+      "promptLa": "pestis Thebas ___ .",
+      "options": [
+        "vexat",
+        "vexant",
+        "vexo",
+        "vexamus"
+      ],
+      "correct": 0,
+      "explain": "Pestis is 3rd person singular, so the verb is vexat ('it troubles'). vexant would be 'they trouble'."
+    },
+    {
+      "kind": "translate",
+      "promptEn": "How do you say 'I will find the truth'?",
+      "options": [
+        "ego veritatem inveniam.",
+        "ego veritatem inveni.",
+        "ego veritatem invenio.",
+        "veritas invenit."
+      ],
+      "correct": 0,
+      "explain": "Future tense -iam ('I will find'). The perfect inveni means 'I have found', and invenio means 'I find'."
+    }
+  ],
+
+  "Capitulum II": [
+    {
+      "kind": "vocab",
+      "promptEn": "What does vates mean?",
+      "promptLa": "vates",
+      "options": [
+        "prophet / seer",
+        "shepherd",
+        "messenger",
+        "queen"
+      ],
+      "correct": 0,
+      "explain": "Vates = a prophet who speaks for the gods (like Tiresias). Pastor = shepherd, nuntius = messenger, regina = queen."
+    },
+    {
+      "kind": "translate",
+      "promptEn": "How do you say 'Apollo speaks' (in the present)?",
+      "options": [
+        "Apollo dicit.",
+        "Apollo dixit.",
+        "Apollo dico.",
+        "Apollo dicunt."
+      ],
+      "correct": 0,
+      "explain": "dicit = present 3rd person singular. dixit is the perfect (he said). dico is 1st person (I say)."
+    },
+    {
+      "kind": "form",
+      "promptEn": "Pick the form that means 'sees' (Tiresias is the subject).",
+      "promptLa": "Tiresias multa ___ .",
+      "options": [
+        "videt",
+        "video",
+        "videbam",
+        "videbo"
+      ],
+      "correct": 0,
+      "explain": "Tiresias is 3rd person singular, so videt ('he sees'). The form videbo means 'I will see'; videbam means 'I was seeing'."
+    }
+  ],
+
+  "Capitulum III": [
+    {
+      "kind": "translate",
+      "promptEn": "How do you say 'You are the crime!'?",
+      "options": [
+        "tu es scelus!",
+        "tu sum scelus!",
+        "tu est scelus!",
+        "tu es sceleris!"
+      ],
+      "correct": 0,
+      "explain": "es = 'you are' (2nd person singular of esse). Sum is 1st person ('I am'); est is 3rd person ('he/she/it is')."
+    },
+    {
+      "kind": "vocab",
+      "promptEn": "What does noli quaerere mean?",
+      "promptLa": "noli quaerere",
+      "options": [
+        "do not seek / do not ask",
+        "do not flee",
+        "do not see",
+        "do not speak"
+      ],
+      "correct": 0,
+      "explain": "noli + infinitive = negative command in Latin. quaerere = 'to seek / to ask'. Tiresias keeps warning: noli quaerere — don't go looking."
+    },
+    {
+      "kind": "form",
+      "promptEn": "Pick the perfect-tense form (the king said it once in the past).",
+      "promptLa": "rex iratus ___ : 'Creon te misit!'",
+      "options": [
+        "dixit",
+        "dicit",
+        "dico",
+        "dicent"
+      ],
+      "correct": 0,
+      "explain": "dixit = perfect tense (he said — completed past). dicit is present ('says now'). The -xit ending is a classic perfect form."
+    }
+  ],
+
+  "Capitulum IV": [
+    {
+      "kind": "translate",
+      "promptEn": "How do you say 'the queen's chamber'?",
+      "options": [
+        "cubiculum reginae",
+        "cubiculum regina",
+        "regina cubiculum",
+        "reginae in cubiculo"
+      ],
+      "correct": 0,
+      "explain": "Genitive case shows possession: reginae = 'of the queen'. Word order is flexible but the genitive ending tells you whose chamber it is."
+    },
+    {
+      "kind": "vocab",
+      "promptEn": "What does matrimonium mean?",
+      "promptLa": "matrimonium",
+      "options": [
+        "marriage",
+        "mother",
+        "mountain",
+        "monster"
+      ],
+      "correct": 0,
+      "explain": "Matrimonium = marriage. The Latin root mater (mother) is in there. Oedipus accidentally enters into matrimonium with his own mother."
+    },
+    {
+      "kind": "form",
+      "promptEn": "Pick the perfect passive form meaning 'was killed'.",
+      "promptLa": "Laius in trivio ___ .",
+      "options": [
+        "necatus est",
+        "necavit",
+        "necabit",
+        "necat"
+      ],
+      "correct": 0,
+      "explain": "Perfect passive = participle (necatus) + est. necavit = 'he killed' (active). necabit = 'he will kill' (future active)."
+    }
+  ],
+
+  "Capitulum V": [
+    {
+      "kind": "translate",
+      "promptEn": "How do you say 'Polybus is dead'?",
+      "options": [
+        "Polybus mortuus est.",
+        "Polybus mortua est.",
+        "Polybus moritur.",
+        "Polybus mortuum est."
+      ],
+      "correct": 0,
+      "explain": "mortuus est = 'has died / is dead'. Polybus is masculine, so the participle is mortuus (not mortua, which is feminine)."
+    },
+    {
+      "kind": "vocab",
+      "promptEn": "What does nuntius mean?",
+      "promptLa": "nuntius",
+      "options": [
+        "messenger",
+        "nephew",
+        "knight",
+        "shepherd"
+      ],
+      "correct": 0,
+      "explain": "Nuntius = messenger. The Corinthian nuntius brings the news that Polybus is dead — and the news that he is not Oedipus's true father."
+    },
+    {
+      "kind": "form",
+      "promptEn": "Pick the perfect-tense 1st-person form ('I carried').",
+      "promptLa": "ego te ad Polybum ___ .",
+      "options": [
+        "portavi",
+        "portavit",
+        "porto",
+        "portas"
+      ],
+      "correct": 0,
+      "explain": "portavi = 'I carried' (perfect 1st sg, ending -avi). portavit is 3rd person ('he carried'); porto is present ('I carry')."
+    }
+  ],
+
+  "Capitulum VI": [
+    {
+      "kind": "translate",
+      "promptEn": "How do you say 'I saved a baby'?",
+      "options": [
+        "infantem servavi",
+        "infantem servo",
+        "infantes servavi",
+        "infans servavi"
+      ],
+      "correct": 0,
+      "explain": "infantem (object — accusative singular) + servavi (perfect 1st sg, 'I saved'). 'infans' is the nominative subject form."
+    },
+    {
+      "kind": "vocab",
+      "promptEn": "What does pastor mean?",
+      "promptLa": "pastor",
+      "options": [
+        "shepherd",
+        "father",
+        "priest",
+        "prophet"
+      ],
+      "correct": 0,
+      "explain": "Pastor = shepherd. The pastor saved baby Oedipus on the mountain — and finally tells the king the whole truth in this chapter."
+    },
+    {
+      "kind": "form",
+      "promptEn": "Pick the right form of 'to be' for 'you ARE' (when the shepherd accuses Oedipus).",
+      "promptLa": "tu filius Lai et Iocastae ___ .",
+      "options": [
+        "es",
+        "est",
+        "sum",
+        "sunt"
+      ],
+      "correct": 0,
+      "explain": "es = 'you are' (2nd person singular). est = 'he/she/it is'; sum = 'I am'; sunt = 'they are'."
+    }
+  ],
+
+  "Capitulum VII": [
+    {
+      "kind": "vocab",
+      "promptEn": "What does iudicium mean?",
+      "promptLa": "iudicium",
+      "options": [
+        "judgement / reckoning",
+        "joy",
+        "journey",
+        "justice (alone)"
+      ],
+      "correct": 0,
+      "explain": "Iudicium = judgement, the moment of reckoning. The king must judge himself in this chapter."
+    },
+    {
+      "kind": "translate",
+      "promptEn": "How do you say 'I will go into exile'?",
+      "options": [
+        "exsulabo",
+        "exsulat",
+        "exsulavi",
+        "exsules"
+      ],
+      "correct": 0,
+      "explain": "Future tense ending -bo: exsulabo = 'I will go into exile'. exsulat is present ('he goes into exile'); exsulavi is perfect ('I went')."
+    },
+    {
+      "kind": "form",
+      "promptEn": "Pick the form meaning 'judges' (the subject is rex).",
+      "promptLa": "rex se ipsum ___ .",
+      "options": [
+        "iudicat",
+        "iudicas",
+        "iudico",
+        "iudicant"
+      ],
+      "correct": 0,
+      "explain": "rex is 3rd person singular: iudicat ('he judges'). iudicas = 'you judge'; iudico = 'I judge'; iudicant = 'they judge'."
+    }
+  ],
+
+  "Capitulum VIII": [
+    {
+      "kind": "translate",
+      "promptEn": "How do you say 'the story is complete'?",
+      "options": [
+        "fabula completa est",
+        "fabulam completa est",
+        "fabulae completam est",
+        "fabula completus est"
+      ],
+      "correct": 0,
+      "explain": "fabula (subject, nominative feminine) + completa (feminine perfect participle) + est. The participle agrees with the subject in gender, number and case."
+    },
+    {
+      "kind": "vocab",
+      "promptEn": "What does fatum mean?",
+      "promptLa": "fatum",
+      "options": [
+        "fate",
+        "fault",
+        "father",
+        "feast"
+      ],
+      "correct": 0,
+      "explain": "Fatum = fate. The English word 'fate' comes from it. Fata vincunt — the fates conquer."
+    },
+    {
+      "kind": "form",
+      "promptEn": "Pick the form meaning 'they conquer'.",
+      "promptLa": "fata cunctos ___ .",
+      "options": [
+        "vincunt",
+        "vincit",
+        "vincitur",
+        "vinco"
+      ],
+      "correct": 0,
+      "explain": "vincunt = 'they conquer' (3rd person plural). fata is plural ('the fates'), so the verb is plural. vincit = 'he/she/it conquers'."
+    }
+  ]
+}

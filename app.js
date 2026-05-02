@@ -13,7 +13,7 @@
     coral:  { fill: '#D85A30', bg: '#F5C4B3' },
   };
 
-  const data = { scenes: null, characters: null, vocab: null, quizzes: null, choruses: null };
+  const data = { scenes: null, characters: null, vocab: null, quizzes: null, choruses: null, drills: null };
 
   const state = {
     current: 'sphinx_riddle',  // new students start with the prologue riddle
@@ -28,6 +28,7 @@
     chaptersSeen: [],  // chapter labels for which the chorus has been shown this playthrough
     wordStats: {},     // { word: { encountered: N, clicked: M } } — cumulative across all replays
     achievements: [],  // medallion IDs earned, cumulative across all replays
+    drillResults: {},  // { chapter: { drillIndex: 'correct' | 'wrong:N' } } — cumulative
     view: 'story',
   };
 
@@ -157,6 +158,7 @@
         chaptersSeen: state.chaptersSeen,
         wordStats: state.wordStats,
         achievements: state.achievements,
+        drillResults: state.drillResults,
       }));
     } catch (_) { /* private mode etc. */ }
   }
@@ -184,6 +186,7 @@
         if (Array.isArray(s.chaptersSeen)) state.chaptersSeen = s.chaptersSeen;
         if (s.wordStats && typeof s.wordStats === 'object') state.wordStats = s.wordStats;
         if (Array.isArray(s.achievements)) state.achievements = s.achievements;
+        if (s.drillResults && typeof s.drillResults === 'object') state.drillResults = s.drillResults;
       }
     } catch (_) { /* ignore */ }
   }
@@ -892,13 +895,122 @@
   // --- main render dispatcher ----------------------------------------------
   function render() {
     switch (state.view) {
-      case 'cards': renderCards(); break;
-      case 'clues': renderClues(); break;
-      case 'vocab': renderVocab(); break;
+      case 'cards':  renderCards();  break;
+      case 'clues':  renderClues();  break;
+      case 'vocab':  renderVocab();  break;
+      case 'drills': renderDrills(); break;
       case 'story':
       default: renderStory(); break;
     }
     evaluateAchievements();
+  }
+
+  // Compute set of chapters the student has visited (any scene in that chapter).
+  function visitedChapters() {
+    const set = new Set();
+    state.history.forEach(id => {
+      const s = data.scenes && data.scenes[id];
+      if (s && s.chapter) set.add(s.chapter);
+    });
+    return set;
+  }
+
+  function renderDrills() {
+    const drills = data.drills || {};
+    const chapters = Object.keys(drills).filter(k => !k.startsWith('_'));
+    if (chapters.length === 0) {
+      app.innerHTML = `<p class="empty">No drills loaded.</p>`;
+      return;
+    }
+    const visited = visitedChapters();
+
+    // Compute totals across visited drills
+    let answeredAcross = 0, correctAcross = 0, totalAvail = 0;
+    chapters.forEach(ch => {
+      const set = drills[ch] || [];
+      totalAvail += set.length;
+      const results = state.drillResults[ch] || {};
+      set.forEach((_, i) => {
+        const r = results[i];
+        if (r) {
+          answeredAcross++;
+          if (r === 'correct') correctAcross++;
+        }
+      });
+    });
+
+    const summaryHtml = `
+      <div class="drills-summary">
+        <p class="vocab-summary-label">progressus tuus <em>your progress</em></p>
+        <p class="vocab-summary-number"><span class="num-correct">${correctAcross}</span><span class="num-divider">/</span><span class="num-total">${answeredAcross}</span></p>
+        <p class="drills-summary-hint"><em>questions answered correctly &middot; ${totalAvail - answeredAcross} drills remaining</em></p>
+      </div>
+    `;
+
+    const chapterBlocks = chapters.map(ch => {
+      const set = drills[ch];
+      const isVisited = visited.has(ch);
+      const results = state.drillResults[ch] || {};
+      const answered = set.filter((_, i) => results[i]).length;
+      const correct = set.filter((_, i) => results[i] === 'correct').length;
+
+      const drillsHtml = !isVisited ? `
+        <p class="drill-locked"><em>Visit this chapter in the story to unlock its drills.</em></p>
+      ` : set.map((d, i) => renderDrillCard(ch, i, d, results[i])).join('');
+
+      return `
+        <section class="drill-chapter ${isVisited ? '' : 'locked'}">
+          <header class="drill-chapter-head">
+            <h3 class="drill-chapter-title">${escapeHtml(ch)}</h3>
+            <span class="drill-chapter-tally">${isVisited ? `${correct}/${set.length}` : '—'}</span>
+          </header>
+          <div class="drill-chapter-body">${drillsHtml}</div>
+        </section>`;
+    }).join('');
+
+    app.innerHTML = `
+      <div class="vocab-summary">
+        <div class="vocab-summary-stat">
+          ${summaryHtml.match(/<p class="vocab-summary-label[\s\S]*?<\/p>/)[0]}
+          ${summaryHtml.match(/<p class="vocab-summary-number[\s\S]*?<\/p>/)[0]}
+          <p class="vocab-summary-hint"><em>Latin retrieval drills — produce, don't just recognise. Three per chapter; complete each chapter as you progress through the story.</em></p>
+        </div>
+      </div>
+      <div class="drills-list">${chapterBlocks}</div>
+    `;
+  }
+
+  function renderDrillCard(chapter, index, drill, result) {
+    const optsHtml = drill.options.map((opt, i) => {
+      let cls = 'quiz-opt drill-opt';
+      if (result) {
+        if (i === drill.correct) cls += ' correct';
+        if (result === 'wrong:' + i) cls += ' wrong';
+      }
+      const disabled = result ? 'disabled' : '';
+      return `<button class="${cls}" data-drill-chapter="${escapeHtml(chapter)}" data-drill-index="${index}" data-drill-opt="${i}" ${disabled}>${escapeHtml(opt)}</button>`;
+    }).join('');
+
+    const explainHtml = result
+      ? `<div class="quiz-explain" role="status">${escapeHtml(drill.explain || '')}</div>`
+      : '';
+
+    const promptLaHtml = drill.promptLa
+      ? `<p class="drill-promptLa">${latinize(drill.promptLa)}${audioBtnHtml(drill.promptLa, 'Listen aloud')}</p>`
+      : '';
+
+    const kindLabels = { translate: 'Translate', form: 'Pick the form', vocab: 'Vocabulary' };
+    const kindLabel = kindLabels[drill.kind] || drill.kind;
+
+    return `
+      <section class="drill-card" aria-label="Drill ${index + 1} for ${escapeHtml(chapter)}">
+        <p class="drill-eyebrow">${escapeHtml(kindLabel)}</p>
+        <p class="drill-prompt">${escapeHtml(drill.promptEn)}</p>
+        ${promptLaHtml}
+        <div class="quiz-options">${optsHtml}</div>
+        ${explainHtml}
+      </section>
+    `;
   }
 
   // --- Latin audio (Web Speech API) ---------------------------------------
@@ -1072,10 +1184,25 @@
     if (wasRevealed) trackWordClick(lat);
   });
 
-  // --- quiz click handler --------------------------------------------------
+  // --- quiz / drill click handler ------------------------------------------
   app.addEventListener('click', (e) => {
     const btn = e.target.closest('.quiz-opt');
     if (!btn || btn.disabled) return;
+    // Drill answer (lives in the Exercitatio tab).
+    if (btn.classList.contains('drill-opt')) {
+      const ch = btn.dataset.drillChapter;
+      const idx = Number(btn.dataset.drillIndex);
+      const opt = Number(btn.dataset.drillOpt);
+      const drill = (data.drills && data.drills[ch] && data.drills[ch][idx]);
+      if (!drill) return;
+      const correct = opt === drill.correct;
+      if (!state.drillResults[ch]) state.drillResults[ch] = {};
+      state.drillResults[ch][idx] = correct ? 'correct' : 'wrong:' + opt;
+      save();
+      render();
+      return;
+    }
+    // In-story comprehension quiz.
     const i = Number(btn.dataset.quizIndex);
     const quiz = data.quizzes[state.current];
     if (!quiz) return;
@@ -1143,18 +1270,20 @@
 
   (async () => {
     try {
-      const [scenes, characters, vocab, quizzes, choruses] = await Promise.all([
+      const [scenes, characters, vocab, quizzes, choruses, drills] = await Promise.all([
         loadJSON('data/scenes.json'),
         loadJSON('data/characters.json'),
         loadJSON('data/vocab.json'),
         loadJSON('data/quizzes.json'),
         loadJSON('data/choruses.json').catch(() => ({})),
+        loadJSON('data/drills.json').catch(() => ({})),
       ]);
       data.scenes = stripSchema(scenes);
       data.characters = stripSchema(characters);
       data.vocab = stripSchema(vocab);
       data.quizzes = stripSchema(quizzes);
       data.choruses = stripSchema(choruses);
+      data.drills = stripSchema(drills);
       load();
       applyMode();
       render();
