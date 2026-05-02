@@ -1,0 +1,101 @@
+{
+  "_schema": {
+    "_description": "Character cards. Unlocked when student meets character in story (see scenes.json 'chars' field).",
+    "_fields": {
+      "name": "Display name",
+      "title": "Latin title (e.g. 'Rex Thebarum')",
+      "titleEn": "English translation of title",
+      "color": "Theme color: purple | pink | blue | amber | teal | coral",
+      "initials": "2-letter avatar initials",
+      "stats": "Object with sapientia, fortitudo, superbia, fatum (1-10 each)",
+      "phrase": "Latin catchphrase",
+      "phraseEn": "English translation of catchphrase",
+      "bio": "Latin bio (1-2 sentences)",
+      "bioEn": "English translation of bio"
+    },
+    "_statKeys": {
+      "sapientia": "wisdom",
+      "fortitudo": "courage",
+      "superbia": "pride",
+      "fatum": "fate (how heavily fate weighs on them)"
+    }
+  },
+
+  "oedipus": {
+    "name": "Oedipus",
+    "title": "Rex Thebarum",
+    "titleEn": "King of Thebes",
+    "color": "purple",
+    "initials": "OE",
+    "stats": { "sapientia": 9, "fortitudo": 8, "superbia": 10, "fatum": 10 },
+    "phrase": "ego veritatem inveniam",
+    "phraseEn": "I will find the truth",
+    "bio": "iuvenis ex Corintho. rex Thebarum. Sphingem solvit.",
+    "bioEn": "A young man from Corinth. King of Thebes. He solved the Sphinx's riddle."
+  },
+
+  "iocasta": {
+    "name": "Iocasta",
+    "title": "Regina",
+    "titleEn": "The Queen",
+    "color": "pink",
+    "initials": "IO",
+    "stats": { "sapientia": 8, "fortitudo": 7, "superbia": 5, "fatum": 10 },
+    "phrase": "noli quaerere",
+    "phraseEn": "Do not ask",
+    "bio": "regina Thebarum. uxor Oedipi. olim uxor Lai.",
+    "bioEn": "Queen of Thebes. Wife of Oedipus. Once the wife of Laius."
+  },
+
+  "creon": {
+    "name": "Creon",
+    "title": "Frater Reginae",
+    "titleEn": "Brother of the Queen",
+    "color": "blue",
+    "initials": "CR",
+    "stats": { "sapientia": 7, "fortitudo": 6, "superbia": 4, "fatum": 6 },
+    "phrase": "Apollo dicit",
+    "phraseEn": "Apollo speaks",
+    "bio": "frater Iocastae. ad oraculum venit.",
+    "bioEn": "Brother of Jocasta. He went to the oracle at Delphi."
+  },
+
+  "tiresias": {
+    "name": "Tiresias",
+    "title": "Vates Caecus",
+    "titleEn": "The Blind Prophet",
+    "color": "amber",
+    "initials": "TI",
+    "stats": { "sapientia": 10, "fortitudo": 6, "superbia": 5, "fatum": 10 },
+    "phrase": "tu es scelus",
+    "phraseEn": "You are the crime",
+    "bio": "vates. caecus est sed veritatem videt.",
+    "bioEn": "A prophet. He is blind, but he sees the truth."
+  },
+
+  "pastor": {
+    "name": "Pastor",
+    "title": "Servus Lai",
+    "titleEn": "Servant of Laius",
+    "color": "teal",
+    "initials": "PA",
+    "stats": { "sapientia": 5, "fortitudo": 4, "superbia": 1, "fatum": 9 },
+    "phrase": "infantem servavi",
+    "phraseEn": "I saved a baby",
+    "bio": "pastor antiquus. infantem in monte invenit.",
+    "bioEn": "An old shepherd. He found a baby on the mountain long ago."
+  },
+
+  "nuntius": {
+    "name": "Nuntius",
+    "title": "Ex Corintho",
+    "titleEn": "From Corinth",
+    "color": "coral",
+    "initials": "NU",
+    "stats": { "sapientia": 6, "fortitudo": 5, "superbia": 2, "fatum": 8 },
+    "phrase": "Polybus mortuus est",
+    "phraseEn": "Polybus is dead",
+    "bio": "nuntius ex Corintho. nuntium fert.",
+    "bioEn": "A messenger from Corinth. He carries news."
+  }
+}

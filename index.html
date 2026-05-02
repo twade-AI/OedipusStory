@@ -1,0 +1,36 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover" />
+  <title>Oedipus Detective — Year 7 Latin Adventure</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link href="https://fonts.googleapis.com/css2?family=EB+Garamond:ital,wght@0,400;0,600;0,700;1,400&family=Inter:wght@400;500;600&display=swap" rel="stylesheet" />
+  <link rel="stylesheet" href="style.css" />
+</head>
+<body>
+  <header class="site-header">
+    <div class="header-inner">
+      <h1 class="site-title">Oedipus Detective</h1>
+      <p class="site-sub">A Year 7 Latin Adventure — <em>fabula in lingua Latina</em></p>
+    </div>
+  </header>
+
+  <nav class="tabs" role="tablist" aria-label="Sections">
+    <button class="tab active" data-view="story" role="tab" aria-selected="true">Fabula</button>
+    <button class="tab" data-view="cards" role="tab" aria-selected="false">Personae</button>
+    <button class="tab" data-view="clues" role="tab" aria-selected="false">Indicia</button>
+    <button class="tab" data-view="vocab" role="tab" aria-selected="false">Verba</button>
+    <button class="tab reset" id="reset-btn" title="Reset the story">Iterum</button>
+  </nav>
+
+  <main id="app" class="container" aria-live="polite"></main>
+
+  <footer class="site-footer">
+    <p>Click any Latin word to reveal its meaning. Click again to hide it.</p>
+  </footer>
+
+  <script src="app.js"></script>
+</body>
+</html>
