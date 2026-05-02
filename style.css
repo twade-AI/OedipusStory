@@ -396,9 +396,72 @@ html, body {
 }
 .lat.revealed { background: #f8e9b5; }
 
-/* --- Per-line translation reveal -------------------------------------- */
+/* --- Per-line translation reveal --------------------------------------
+   Default behaviour (Discipulus mode): English lines are hidden until the
+   student taps the EN reveal pill.
+   Tiro mode shows them always; Magister mode never reveals them at all. */
 .translatable .line-en { display: none; }
 .translatable.revealed .line-en { display: block; }
+
+/* --- Difficulty modes -------------------------------------------------- */
+/* Tiro — full English support: line translations always visible; reveal pills
+   become redundant and are hidden. */
+body.mode-tiro .translatable .line-en,
+body.mode-tiro .translatable.revealed .line-en { display: block; }
+body.mode-tiro .reveal-toggle { display: none; }
+
+/* Magister — Latin only. Pills are hidden, line-en is forced hidden even
+   if a previous click set .revealed on the container. Word-level reveal
+   on .lat spans still works so students aren't stranded. */
+body.mode-magister .reveal-toggle { display: none; }
+body.mode-magister .translatable .line-en,
+body.mode-magister .translatable.revealed .line-en { display: none; }
+
+/* Mode selector control in the tab bar. */
+.mode-control {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.4rem;
+  margin-left: auto;
+  padding: 0 0.5rem;
+  white-space: nowrap;
+}
+.mode-label {
+  font-family: var(--display);
+  font-size: 0.72rem;
+  letter-spacing: 0.18em;
+  text-transform: uppercase;
+  color: var(--bronze);
+}
+.mode-select {
+  appearance: none;
+  -webkit-appearance: none;
+  background:
+    var(--bg-deep)
+    url("data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' width='10' height='6' viewBox='0 0 10 6' fill='none' stroke='%23b08c4a' stroke-width='1.5'><path d='M1 1 L5 5 L9 1'/></svg>")
+    no-repeat right 0.7rem center;
+  color: var(--bronze-bright);
+  border: 1px solid var(--bronze);
+  border-radius: 4px;
+  padding: 0.45rem 1.8rem 0.45rem 0.7rem;
+  font-family: var(--display);
+  font-size: 0.78rem;
+  font-weight: 500;
+  letter-spacing: 0.1em;
+  cursor: pointer;
+  min-height: 36px;
+  min-width: 12rem;
+}
+.mode-select:focus-visible {
+  outline: 2px solid var(--bronze-bright);
+  outline-offset: 2px;
+}
+/* Modus moves before Iterum on narrow screens; allow tab bar to wrap if needed. */
+@media (max-width: 720px) {
+  .tabs { flex-wrap: wrap; }
+  .mode-control { order: 5; flex-basis: 100%; margin-left: 0; padding: 0.3rem 0; }
+  .mode-select { width: 100%; }
+}
 
 .reveal-toggle {
   appearance: none;

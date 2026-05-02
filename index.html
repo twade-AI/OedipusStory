@@ -24,6 +24,14 @@
     <button class="tab" data-view="cards" role="tab" aria-selected="false">Personae</button>
     <button class="tab" data-view="clues" role="tab" aria-selected="false">Indicia</button>
     <button class="tab" data-view="vocab" role="tab" aria-selected="false">Verba</button>
+    <label class="mode-control" title="Adjust English support">
+      <span class="mode-label">Modus</span>
+      <select id="mode-select" class="mode-select" aria-label="Difficulty mode — controls English support">
+        <option value="tiro">Tiro · all English visible</option>
+        <option value="discipulus" selected>Discipulus · reveal on tap</option>
+        <option value="magister">Magister · Latin only</option>
+      </select>
+    </label>
     <button class="tab reset" id="reset-btn" title="Reset the story">Iterum</button>
   </nav>
 
