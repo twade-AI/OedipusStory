@@ -213,7 +213,16 @@
         if (vocab[clean]) {
           const entry = vocab[clean];
           const en = typeof entry === 'string' ? entry : (entry.en || '');
-          return `<span class="lat" tabindex="0" role="button" data-en="${escapeHtml(en)}">${escapeHtml(token)}</span>`;
+          const grammar = typeof entry === 'object' && entry.grammar ? entry.grammar : '';
+          const grammarAttr = grammar ? ` data-grammar="${escapeHtml(grammar)}"` : '';
+          const grammarCls = grammar ? ' has-grammar' : '';
+          const wordAttr = ` data-word="${escapeHtml(clean)}"`;
+          // Grammar marker is in the DOM only when there's a note; CSS keeps it
+          // hidden until the parent span is .revealed.
+          const marker = grammar
+            ? `<span class="lat-grammar-btn" role="button" tabindex="0" aria-label="Grammar note for ${escapeHtml(clean)}">ⓘ</span>`
+            : '';
+          return `<span class="lat${grammarCls}" tabindex="0" role="button" data-en="${escapeHtml(en)}"${grammarAttr}${wordAttr}>${escapeHtml(token)}${marker}</span>`;
         }
         return escapeHtml(token);
       })
@@ -383,7 +392,7 @@
   // Excludes the sphinx_riddle (it's a one-time gate, not a comprehension quiz).
   // Increment the click count for the word inside a .lat span.
   function trackWordClick(lat) {
-    const w = cleanWord(lat.textContent);
+    const w = lat.getAttribute('data-word') || cleanWord(lat.textContent);
     if (!w || !data.vocab || !data.vocab[w]) return;
     if (!state.wordStats[w]) state.wordStats[w] = { encountered: 0, clicked: 0 };
     state.wordStats[w].clicked++;
@@ -888,8 +897,57 @@
     evaluateAchievements();
   }
 
+  // --- grammar popover ---------------------------------------------------
+  function showGrammarPopover(latEl) {
+    const word = latEl.getAttribute('data-word') || latEl.textContent.replace(/ⓘ/g, '').trim();
+    const en = latEl.getAttribute('data-en') || '';
+    const grammar = latEl.getAttribute('data-grammar') || '';
+    if (!grammar) return;
+    let pop = document.getElementById('grammar-popover');
+    if (!pop) {
+      pop = document.createElement('div');
+      pop.id = 'grammar-popover';
+      pop.setAttribute('role', 'dialog');
+      pop.setAttribute('aria-modal', 'true');
+      pop.setAttribute('aria-labelledby', 'grammar-pop-title');
+      document.body.appendChild(pop);
+    }
+    pop.innerHTML = `
+      <button type="button" class="grammar-pop-overlay" aria-label="Close"></button>
+      <div class="grammar-pop-card" role="document">
+        <button type="button" class="grammar-pop-close" aria-label="Close grammar note">×</button>
+        <p class="grammar-pop-eyebrow">Grammar note</p>
+        <h3 id="grammar-pop-title" class="grammar-pop-word">${escapeHtml(word)}</h3>
+        <p class="grammar-pop-meaning"><em>${escapeHtml(en)}</em></p>
+        <p class="grammar-pop-body">${escapeHtml(grammar)}</p>
+      </div>
+    `;
+    pop.classList.add('open');
+    const close = () => {
+      pop.classList.remove('open');
+      pop.removeEventListener('click', onClick);
+      document.removeEventListener('keydown', onKey);
+    };
+    const onClick = (ev) => {
+      if (ev.target.closest('.grammar-pop-close') || ev.target.matches('.grammar-pop-overlay')) close();
+    };
+    const onKey = (ev) => { if (ev.key === 'Escape') close(); };
+    pop.addEventListener('click', onClick);
+    document.addEventListener('keydown', onKey);
+    // Focus the close button so screen readers + keyboard land in the dialog.
+    setTimeout(() => pop.querySelector('.grammar-pop-close')?.focus(), 0);
+  }
+
   // --- click-to-reveal: line-level translation toggle and per-word reveal --
   document.addEventListener('click', (e) => {
+    // Grammar marker (ⓘ) — open the popover and stop the reveal toggle from firing.
+    const grammarBtn = e.target.closest('.lat-grammar-btn');
+    if (grammarBtn) {
+      e.stopPropagation();
+      const lat = grammarBtn.closest('.lat');
+      if (lat) showGrammarPopover(lat);
+      return;
+    }
     const toggle = e.target.closest('.reveal-toggle');
     if (toggle) {
       e.stopPropagation();
@@ -908,6 +966,14 @@
   });
   document.addEventListener('keydown', (e) => {
     if (e.key !== 'Enter' && e.key !== ' ') return;
+    // Grammar marker keyboard activation has priority.
+    const grammarBtn = e.target.closest && e.target.closest('.lat-grammar-btn');
+    if (grammarBtn) {
+      e.preventDefault();
+      const lat = grammarBtn.closest('.lat');
+      if (lat) showGrammarPopover(lat);
+      return;
+    }
     const lat = e.target.closest && e.target.closest('.lat');
     if (!lat) return;
     e.preventDefault();
