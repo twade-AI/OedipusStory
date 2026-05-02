@@ -111,6 +111,24 @@
     }
 
     const isEnding = !!scene.isEnding;
+
+    // Cast strip — small portrait medallions for characters present in this scene.
+    const castIds = (Array.isArray(scene.chars) ? scene.chars : []).filter(id => data.characters[id]);
+    const castHtml = castIds.length === 0 ? '' : `
+      <div class="scene-cast" aria-label="In this scene">
+        ${castIds.map(id => {
+          const c = data.characters[id];
+          const palette = COLORS[c.color] || COLORS.purple;
+          const portrait = c.image
+            ? `<img src="${escapeHtml(c.image)}" alt="${escapeHtml(c.name)}" loading="lazy" decoding="async" />`
+            : `<span class="cast-initials" style="background:${palette.fill}">${escapeHtml(c.initials || '?')}</span>`;
+          return `<figure class="cast-medallion" title="${escapeHtml(c.name)} — ${escapeHtml(c.titleEn)}">
+            <div class="cast-frame" style="--frame-tone:${palette.fill}">${portrait}</div>
+            <figcaption class="cast-name">${escapeHtml(c.name)}</figcaption>
+          </figure>`;
+        }).join('')}
+      </div>`;
+
     const choicesHtml = (scene.choices || []).map((c, i) => `
       <div class="choice-row translatable">
         <button class="choice" data-choice-index="${i}">
@@ -132,6 +150,7 @@
           <p class="scene-title-en line-en">${escapeHtml(scene.titleEn || '')}</p>
         </div>
         ${scene.setting ? `<p class="scene-setting">${escapeHtml(scene.setting)}</p>` : ''}
+        ${castHtml}
         <div class="narrative">${latinize(scene.latin)}</div>
         ${quizHtml}
         ${isEnding
@@ -213,22 +232,23 @@
             <span class="stat-num">${val}</span>
           </div>`;
       }).join('');
+      const portrait = c.image
+        ? `<img src="${escapeHtml(c.image)}" alt="${escapeHtml(c.name)}, ${escapeHtml(c.titleEn)}" loading="lazy" decoding="async" />`
+        : `<span class="card-portrait-initials" style="background:${palette.fill}">${escapeHtml(c.initials || '?')}</span>`;
       return `
-        <article class="card">
-          <header class="card-head">
-            <div class="avatar" style="background:${palette.fill}">${escapeHtml(c.initials || '?')}</div>
-            <div class="translatable card-title-block">
-              <h3 class="card-name">${escapeHtml(c.name)}</h3>
-              <p class="card-title">${escapeHtml(c.title)}<button type="button" class="reveal-toggle" aria-pressed="false" aria-label="Reveal English translation">en</button></p>
-              <p class="card-title-en line-en"><em>${escapeHtml(c.titleEn)}</em></p>
-            </div>
+        <article class="card" style="--accent-fill:${palette.fill}; --accent-bg:${palette.bg}">
+          <div class="card-portrait">${portrait}</div>
+          <header class="card-head translatable card-title-block">
+            <h3 class="card-name">${escapeHtml(c.name)}</h3>
+            <p class="card-title">${escapeHtml(c.title)}<button type="button" class="reveal-toggle" aria-pressed="false" aria-label="Reveal English translation">en</button></p>
+            <p class="card-title-en line-en"><em>${escapeHtml(c.titleEn)}</em></p>
           </header>
           <div class="translatable">
             <p class="card-bio">${latinize(c.bio)}<button type="button" class="reveal-toggle" aria-pressed="false" aria-label="Reveal English translation">en</button></p>
             <p class="card-bio-en line-en">${escapeHtml(c.bioEn)}</p>
           </div>
           <div class="stats">${statRows}</div>
-          <div class="translatable">
+          <div class="translatable card-phrase-block">
             <p class="card-phrase">“${latinize(c.phrase)}”<button type="button" class="reveal-toggle" aria-pressed="false" aria-label="Reveal English translation">en</button></p>
             <p class="card-phrase-en line-en">${escapeHtml(c.phraseEn)}</p>
           </div>
