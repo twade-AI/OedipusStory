@@ -13,7 +13,7 @@
     coral:  { fill: '#D85A30', bg: '#F5C4B3' },
   };
 
-  const data = { scenes: null, characters: null, vocab: null, quizzes: null };
+  const data = { scenes: null, characters: null, vocab: null, quizzes: null, choruses: null };
 
   const state = {
     current: 'sphinx_riddle',  // new students start with the prologue riddle
@@ -25,6 +25,7 @@
     endingsSeen: [],   // ending scene IDs the student has reached, persisted across resets
     sphinxSolved: false, // once the Sphinx is defeated, replays skip the prologue
     mode: 'discipulus',  // 'tiro' (all English visible) | 'discipulus' (reveal on tap) | 'magister' (Latin only)
+    chaptersSeen: [],  // chapter labels for which the chorus has been shown this playthrough
     view: 'story',
   };
 
@@ -59,6 +60,7 @@
         endingsSeen: state.endingsSeen,
         sphinxSolved: state.sphinxSolved,
         mode: state.mode,
+        chaptersSeen: state.chaptersSeen,
       }));
     } catch (_) { /* private mode etc. */ }
   }
@@ -83,6 +85,7 @@
         if (typeof s.mode === 'string' && ['tiro','discipulus','magister'].includes(s.mode)) {
           state.mode = s.mode;
         }
+        if (Array.isArray(s.chaptersSeen)) state.chaptersSeen = s.chaptersSeen;
       }
     } catch (_) { /* ignore */ }
   }
@@ -183,8 +186,19 @@
     const quiz = data.quizzes && data.quizzes[state.current];
     const quizHtml = quiz ? renderQuiz(state.current, quiz) : '';
 
+    // Chorus interlude — first time entering a chapter, show the chorus above the scene.
+    const chorusHtml = renderChorus(scene.chapter);
+
+    // Scene illustration — painted establishing image for select scenes.
+    const sceneImgHtml = scene.sceneImage ? `
+      <figure class="scene-illustration">
+        <img src="${escapeHtml(scene.sceneImage)}" alt="${escapeHtml(scene.titleEn || scene.title || '')}" loading="lazy" decoding="async" />
+      </figure>` : '';
+
     app.innerHTML = `
       <article class="scene">
+        ${chorusHtml}
+        ${sceneImgHtml}
         <p class="scene-chapter">${escapeHtml(scene.chapter || '')}</p>
         <div class="translatable">
           <h2 class="scene-title">${escapeHtml(scene.title || '')}<button type="button" class="reveal-toggle" aria-pressed="false" aria-label="Reveal English translation">en</button></h2>
@@ -238,6 +252,24 @@
 
   // Compute a running quiz score from state.quizDone. Returns { correct, answered }.
   // Excludes the sphinx_riddle (it's a one-time gate, not a comprehension quiz).
+  // Greek chorus interlude — shown the first time a chapter is entered in a
+  // playthrough. Returns HTML or an empty string. The chapter label is
+  // recorded in state.chaptersSeen so the chorus only appears once per
+  // session; resetting via Iterum clears the list so the choruses replay.
+  function renderChorus(chapter) {
+    if (!chapter || !data.choruses || !data.choruses[chapter]) return '';
+    if (state.chaptersSeen.includes(chapter)) return '';
+    state.chaptersSeen.push(chapter);
+    const c = data.choruses[chapter];
+    return `
+      <aside class="chorus translatable" aria-label="Chorus interlude">
+        <p class="chorus-eyebrow">Chorus &nbsp;·&nbsp; ${escapeHtml(chapter)}<button type="button" class="reveal-toggle" aria-pressed="false" aria-label="Reveal English translation">en</button></p>
+        <p class="chorus-latin">${latinize(c.latin)}</p>
+        <p class="chorus-en line-en">${escapeHtml(c.en)}</p>
+      </aside>
+    `;
+  }
+
   function quizScore() {
     let correct = 0, answered = 0;
     for (const [sceneId, result] of Object.entries(state.quizDone)) {
@@ -427,8 +459,16 @@
         </figure>`;
       }).join('');
 
+    const chorusHtml = renderChorus(scene.chapter);
+    const sceneImgHtml = scene.sceneImage ? `
+      <figure class="scene-illustration">
+        <img src="${escapeHtml(scene.sceneImage)}" alt="${escapeHtml(scene.titleEn || scene.title || '')}" loading="lazy" decoding="async" />
+      </figure>` : '';
+
     app.innerHTML = `
       <article class="scene riddle-scene">
+        ${chorusHtml}
+        ${sceneImgHtml}
         <p class="scene-chapter">${escapeHtml(scene.chapter || '')}</p>
         <div class="translatable">
           <h2 class="scene-title">${escapeHtml(scene.title || '')}<button type="button" class="reveal-toggle" aria-pressed="false" aria-label="Reveal English translation">en</button></h2>
@@ -707,6 +747,7 @@
     state.charsMet = new Set();
     state.quizDone = {};
     state.traits = {};
+    state.chaptersSeen = [];
     // endingsSeen and sphinxSolved are preserved across replays so students
     // see their cumulative progress.
     save();
@@ -729,16 +770,18 @@
 
   (async () => {
     try {
-      const [scenes, characters, vocab, quizzes] = await Promise.all([
+      const [scenes, characters, vocab, quizzes, choruses] = await Promise.all([
         loadJSON('data/scenes.json'),
         loadJSON('data/characters.json'),
         loadJSON('data/vocab.json'),
         loadJSON('data/quizzes.json'),
+        loadJSON('data/choruses.json').catch(() => ({})),
       ]);
       data.scenes = stripSchema(scenes);
       data.characters = stripSchema(characters);
       data.vocab = stripSchema(vocab);
       data.quizzes = stripSchema(quizzes);
+      data.choruses = stripSchema(choruses);
       load();
       applyMode();
       render();

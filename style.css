@@ -84,6 +84,16 @@ html, body {
   margin: 0 0 0.6rem;
   opacity: 0.9;
 }
+.site-logo {
+  display: block;
+  max-width: 220px;
+  width: 55%;
+  height: auto;
+  margin: 0 auto 0.85rem;
+  filter: drop-shadow(0 2px 12px rgba(0, 0, 0, 0.5));
+}
+@media (max-width: 540px) { .site-logo { max-width: 160px; width: 45%; } }
+
 .site-title {
   font-family: var(--display);
   font-weight: 900;
@@ -766,6 +776,116 @@ body.mode-magister .translatable.revealed .line-en { display: none; }
   padding: 2.5rem 1rem;
   font-family: var(--serif);
   font-size: 1.05rem;
+}
+
+/* --- Greek chorus interlude ------------------------------------------- */
+.chorus {
+  position: relative;
+  margin: 0 0 1.4rem;
+  padding: 1.3rem 2.4rem 1.1rem;
+  background:
+    linear-gradient(180deg, var(--bg-deep) 0%, var(--bg-deep-2) 100%);
+  border: 1px solid #000;
+  border-radius: 4px;
+  color: #f3e7c8;
+  text-align: center;
+  box-shadow:
+    inset 0 1px 0 rgba(255, 255, 255, 0.04),
+    0 4px 14px rgba(0, 0, 0, 0.18);
+}
+.chorus::before, .chorus::after {
+  /* Two flanking column glyphs to evoke a stage frons scaenae */
+  content: "";
+  position: absolute;
+  top: 10px;
+  bottom: 10px;
+  width: 12px;
+  background:
+    linear-gradient(180deg,
+      var(--bronze) 0,
+      var(--bronze) 4px,
+      transparent 4px,
+      transparent 8px,
+      var(--bronze) 8px,
+      var(--bronze) calc(100% - 8px),
+      transparent calc(100% - 8px),
+      transparent calc(100% - 4px),
+      var(--bronze) calc(100% - 4px));
+  opacity: 0.6;
+}
+.chorus::before { left: 10px; }
+.chorus::after  { right: 10px; }
+.chorus-eyebrow {
+  margin: 0 0 0.6rem;
+  font-family: var(--display);
+  font-weight: 500;
+  font-size: 0.74rem;
+  letter-spacing: 0.32em;
+  text-transform: uppercase;
+  color: var(--bronze-bright);
+}
+.chorus-latin {
+  margin: 0;
+  font-family: var(--serif);
+  font-style: italic;
+  font-size: 1.12rem;
+  line-height: 1.6;
+  color: #f6e7bf;
+  text-shadow: 0 1px 0 rgba(0,0,0,0.4);
+  max-width: 38rem;
+  margin-left: auto;
+  margin-right: auto;
+}
+.chorus-en {
+  margin: 0.7rem auto 0;
+  font-family: var(--serif);
+  font-style: italic;
+  font-size: 0.92rem;
+  color: #d6c79a;
+  max-width: 38rem;
+}
+.chorus .reveal-toggle {
+  margin-left: 0.5rem;
+  background: transparent;
+  border-color: var(--bronze-bright);
+  color: var(--bronze-bright);
+}
+.chorus.translatable.revealed .reveal-toggle {
+  background: var(--bronze);
+  color: var(--bg-deep);
+  border-color: var(--bronze);
+}
+.chorus .lat { border-bottom-color: var(--bronze-bright); }
+.chorus .lat:hover, .chorus .lat:focus { background: rgba(184, 90, 53, 0.25); }
+.chorus .lat.revealed { background: rgba(176, 140, 74, 0.35); }
+.chorus .lat.revealed::after { color: #d6c79a; }
+
+/* --- Scene illustration banner --------------------------------------- */
+.scene-illustration {
+  margin: 0 0 1.2rem;
+  border-radius: 6px;
+  overflow: hidden;
+  background: var(--bg-deep);
+  box-shadow:
+    0 4px 16px rgba(0, 0, 0, 0.15),
+    0 0 0 1px var(--surface-edge);
+  position: relative;
+}
+.scene-illustration img {
+  width: 100%;
+  height: auto;
+  display: block;
+  filter: contrast(1.05) saturate(0.95);
+}
+.scene-illustration::after {
+  /* Fine bronze meander rule beneath the image to anchor it to the scene */
+  content: "";
+  display: block;
+  height: 14px;
+  background: var(--meander-cream);
+  background-repeat: repeat-x;
+  background-position: center;
+  opacity: 0.6;
 }
 
 /* --- Sphinx riddle (prologue minigame) -------------------------------- */

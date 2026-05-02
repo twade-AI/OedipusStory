@@ -59,7 +59,8 @@
         "hintEn": "It is not a god. Think about the ages of a human's life."
       }
     ],
-    "next": "start"
+    "next": "start",
+    "sceneImage": "images/scenes/sphinx_lair.jpg"
   },
   "start": {
     "title": "Thebae in periculo",
@@ -100,7 +101,8 @@
           "compassion"
         ]
       }
-    ]
+    ],
+    "sceneImage": "images/scenes/palace.jpg"
   },
   "creon_returns": {
     "title": "Creon redit",
@@ -227,7 +229,8 @@
           "patient"
         ]
       }
-    ]
+    ],
+    "sceneImage": "images/scenes/approach.jpg"
   },
   "tiresias_scene": {
     "title": "Tiresias dicit",
@@ -405,7 +408,8 @@
           "patient"
         ]
       }
-    ]
+    ],
+    "sceneImage": "images/scenes/crossroads.jpg"
   },
   "iocasta_truth": {
     "title": "Iocasta narrat",
