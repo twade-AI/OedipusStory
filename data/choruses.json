@@ -1,0 +1,45 @@
+{
+  "_schema": {
+    "_description": "Chorus interludes keyed by chapter label. Shown the first time a student enters that chapter, above the scene narrative.",
+    "_fields": {
+      "latin": "Short Latin chorus passage",
+      "en": "English translation"
+    }
+  },
+  "Capitulum I": {
+    "latin": "heu, Thebae miserae! pestis crescit. dei tacent. cur fata sic dura sunt? rex, audi populum tuum.",
+    "en": "Alas, wretched Thebes! The plague grows. The gods are silent. Why are the fates so harsh? O king, hear your people."
+  },
+  "Capitulum II": {
+    "latin": "rex veritatem investigat. sed veritas in tenebris dormit. cave, rex — quod quaeris, te vulnerabit.",
+    "en": "The king searches for truth. But truth sleeps in darkness. Beware, O king — what you seek will wound you."
+  },
+  "Capitulum III": {
+    "latin": "vates caecus quod oculi non vident videt. heu, rex superbe! ira veritatem non mutat.",
+    "en": "The blind seer sees what the eyes cannot. Alas, proud king — anger does not change the truth."
+  },
+  "Capitulum IV": {
+    "latin": "regina antiqua oracula timet. heu, memoria! quod sepultum est, surgit.",
+    "en": "The queen fears the old oracles. Alas, memory! What is buried rises again."
+  },
+  "Capitulum V": {
+    "latin": "nuntius ex Corintho venit. nova videntur bona — sed dolor sub gaudio latet.",
+    "en": "A messenger comes from Corinth. The news seems good — but sorrow lurks beneath the joy."
+  },
+  "Capitulum VI": {
+    "latin": "pastor antiquus tandem locutus est. omnia nota sunt. silentium nunc plenum est.",
+    "en": "The old shepherd has spoken at last. All is known. The silence is now heavy."
+  },
+  "Capitulum VII": {
+    "latin": "rex se ipsum iudicat. quale fatum eligit? fortes quattuor portae stant.",
+    "en": "The king judges himself. What fate will he choose? Four gates stand before him."
+  },
+  "Capitulum VIII": {
+    "latin": "fabula completa est. fata cunctos vincunt. sed homo electionem habet.",
+    "en": "The story is complete. The fates conquer all — yet a human keeps his choice."
+  },
+  "Prologus": {
+    "latin": "in via ad Thebas, monstrum exspectat. iuvenis, audi: aenigma vita aut mors est.",
+    "en": "On the road to Thebes, a monster waits. Young man, listen — this riddle is life or death."
+  }
+}
