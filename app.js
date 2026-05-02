@@ -16,13 +16,14 @@
   const data = { scenes: null, characters: null, vocab: null, quizzes: null };
 
   const state = {
-    current: 'start',
+    current: 'sphinx_riddle',  // new students start with the prologue riddle
     history: [],       // visited scene IDs in order
     clues: [],
     charsMet: new Set(),
     quizDone: {},      // { sceneId: 'correct' | 'wrong' }
     traits: {},        // { tag: count } — accumulated through choices
     endingsSeen: [],   // ending scene IDs the student has reached, persisted across resets
+    sphinxSolved: false, // once the Sphinx is defeated, replays skip the prologue
     view: 'story',
   };
 
@@ -55,6 +56,7 @@
         quizDone: state.quizDone,
         traits: state.traits,
         endingsSeen: state.endingsSeen,
+        sphinxSolved: state.sphinxSolved,
       }));
     } catch (_) { /* private mode etc. */ }
   }
@@ -71,6 +73,11 @@
         state.quizDone = s.quizDone && typeof s.quizDone === 'object' ? s.quizDone : {};
         state.traits = s.traits && typeof s.traits === 'object' ? s.traits : {};
         state.endingsSeen = Array.isArray(s.endingsSeen) ? s.endingsSeen : [];
+        // Backward-compat: pre-existing saves predate the riddle. If the
+        // student was already past the prologue, mark it solved so they
+        // aren't bounced back to the riddle on reset.
+        if (typeof s.sphinxSolved === 'boolean') state.sphinxSolved = s.sphinxSolved;
+        else if (s.current && s.current !== 'sphinx_riddle') state.sphinxSolved = true;
       }
     } catch (_) { /* ignore */ }
   }
@@ -130,6 +137,13 @@
     }
     if (!state.history.includes(state.current)) {
       state.history.push(state.current);
+    }
+
+    // Riddle-type scenes go through their own renderer.
+    if (scene.sceneType === 'riddle') {
+      renderRiddle(scene);
+      save();
+      return;
     }
 
     const isEnding = !!scene.isEnding;
@@ -253,6 +267,114 @@
         </div>
       </section>
     `;
+  }
+
+  function renderRiddle(scene) {
+    const sceneId = state.current;
+    const solved = state.sphinxSolved && state.quizDone[sceneId] === 'correct';
+    const opts = Array.isArray(scene.options) ? scene.options : [];
+    const optsHtml = opts.map((o, i) => {
+      let cls = 'riddle-tile';
+      if (solved && o.correct) cls += ' correct';
+      return `<button class="${cls}" data-riddle-index="${i}" ${solved ? 'disabled' : ''}>
+        <span class="riddle-latin">${escapeHtml(o.latin)}</span>
+        <span class="riddle-en">${escapeHtml(o.en || '')}</span>
+      </button>`;
+    }).join('');
+
+    const correctIdx = opts.findIndex(o => o.correct);
+    const correct = correctIdx >= 0 ? opts[correctIdx] : null;
+    const continueHtml = solved && correct ? `
+      <div class="riddle-feedback correct" role="status">
+        <p class="riddle-feedback-latin">${latinize(correct.feedbackLatin || '')}</p>
+        <p class="riddle-feedback-en">${escapeHtml(correct.feedbackEn || '')}</p>
+        <button type="button" class="riddle-continue" id="riddle-continue">ad Thebas eo →</button>
+      </div>
+    ` : '';
+
+    const castHtml = (Array.isArray(scene.chars) ? scene.chars : [])
+      .filter(id => data.characters[id])
+      .map(id => {
+        const c = data.characters[id];
+        const palette = COLORS[c.color] || COLORS.purple;
+        const portrait = c.image
+          ? `<img src="${escapeHtml(c.image)}" alt="${escapeHtml(c.name)}" loading="lazy" decoding="async" />`
+          : `<span class="cast-initials" style="background:${palette.fill}">${escapeHtml(c.initials || '?')}</span>`;
+        return `<figure class="cast-medallion" title="${escapeHtml(c.name)}">
+          <div class="cast-frame" style="--frame-tone:${palette.fill}">${portrait}</div>
+          <figcaption class="cast-name">${escapeHtml(c.name)}</figcaption>
+        </figure>`;
+      }).join('');
+
+    app.innerHTML = `
+      <article class="scene riddle-scene">
+        <p class="scene-chapter">${escapeHtml(scene.chapter || '')}</p>
+        <div class="translatable">
+          <h2 class="scene-title">${escapeHtml(scene.title || '')}<button type="button" class="reveal-toggle" aria-pressed="false" aria-label="Reveal English translation">en</button></h2>
+          <p class="scene-title-en line-en">${escapeHtml(scene.titleEn || '')}</p>
+        </div>
+        ${scene.setting ? `<p class="scene-setting">${escapeHtml(scene.setting)}</p>` : ''}
+        ${castHtml ? `<div class="scene-cast" aria-label="In this scene">${castHtml}</div>` : ''}
+        <div class="narrative">${latinize(scene.latin)}</div>
+        <div class="translatable">
+          <p class="question">${latinize(scene.question)}<button type="button" class="reveal-toggle" aria-pressed="false" aria-label="Reveal English translation">en</button></p>
+          <p class="question-en line-en">${escapeHtml(scene.questionEn || '')}</p>
+        </div>
+        <div class="riddle-tiles">${optsHtml}</div>
+        <div id="riddle-feedback-slot">${continueHtml}</div>
+      </article>
+    `;
+
+    if (!solved) {
+      app.querySelectorAll('.riddle-tile').forEach(btn => {
+        btn.addEventListener('click', () => {
+          const i = Number(btn.dataset.riddleIndex);
+          const opt = opts[i];
+          if (!opt) return;
+          if (opt.correct) {
+            btn.classList.add('correct');
+            // disable all tiles
+            app.querySelectorAll('.riddle-tile').forEach(b => { b.disabled = true; });
+            state.quizDone[sceneId] = 'correct';
+            state.sphinxSolved = true;
+            const slot = document.getElementById('riddle-feedback-slot');
+            slot.innerHTML = `
+              <div class="riddle-feedback correct" role="status">
+                <p class="riddle-feedback-latin">${latinize(opt.feedbackLatin || '')}</p>
+                <p class="riddle-feedback-en">${escapeHtml(opt.feedbackEn || '')}</p>
+                <button type="button" class="riddle-continue" id="riddle-continue">ad Thebas eo →</button>
+              </div>
+            `;
+            save();
+            document.getElementById('riddle-continue').addEventListener('click', () => {
+              state.current = scene.next || 'start';
+              save();
+              render();
+              window.scrollTo({ top: 0, behavior: 'smooth' });
+            });
+          } else {
+            btn.classList.add('wrong');
+            btn.disabled = true;
+            const slot = document.getElementById('riddle-feedback-slot');
+            slot.innerHTML = `
+              <div class="riddle-feedback wrong" role="status">
+                <p class="riddle-feedback-latin">${latinize(opt.hintLatin || '')}</p>
+                <p class="riddle-feedback-en">${escapeHtml(opt.hintEn || '')}</p>
+              </div>
+            `;
+          }
+        });
+      });
+    } else {
+      // Already solved on a previous session — let them continue.
+      const btn = document.getElementById('riddle-continue');
+      if (btn) btn.addEventListener('click', () => {
+        state.current = scene.next || 'start';
+        save();
+        render();
+        window.scrollTo({ top: 0, behavior: 'smooth' });
+      });
+    }
   }
 
   function renderQuiz(sceneId, quiz) {
@@ -427,15 +549,16 @@
     btn.addEventListener('click', () => setView(btn.dataset.view));
   });
   document.getElementById('reset-btn').addEventListener('click', () => {
-    if (!confirm('Reset the story? Your unlocked fates and characters seen so far will be kept.')) return;
-    state.current = 'start';
+    if (!confirm('Reset the story? Your unlocked fates and the Sphinx victory will be kept.')) return;
+    // Skip the prologue riddle on replay if already defeated.
+    state.current = state.sphinxSolved ? 'start' : 'sphinx_riddle';
     state.history = [];
     state.clues = [];
     state.charsMet = new Set();
     state.quizDone = {};
     state.traits = {};
-    // endingsSeen intentionally preserved across replays so students can
-    // see their progress through all four fates.
+    // endingsSeen and sphinxSolved are preserved across replays so students
+    // see their cumulative progress.
     save();
     setView('story');
   });
