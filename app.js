@@ -231,10 +231,102 @@
     save();
   }
 
-  // Render a small "Fates known" + "Your path was…" panel inside ending scenes.
+  // Compute a running quiz score from state.quizDone. Returns { correct, answered }.
+  // Excludes the sphinx_riddle (it's a one-time gate, not a comprehension quiz).
+  function quizScore() {
+    let correct = 0, answered = 0;
+    for (const [sceneId, result] of Object.entries(state.quizDone)) {
+      if (sceneId === 'sphinx_riddle' || !result) continue;
+      answered++;
+      if (result === 'correct') correct++;
+    }
+    return { correct, answered };
+  }
+
+  // Build a personalised Latin epilogue based on the path the student walked.
+  // Returns { latinLines, enLines } parallel arrays of short sentences.
+  function buildEpilogue() {
+    const visited = new Set(state.history);
+    const latin = [];
+    const en = [];
+    const push = (la, eng) => { latin.push(la); en.push(eng); };
+
+    push("olim Oedipus Sphingem solvit.", "Long ago Oedipus solved the Sphinx's riddle.");
+    push("rex Thebarum factus est. tum pestis Thebas vexavit.",
+         "He became king of Thebes. Then a plague troubled the city.");
+
+    // Opening branch — what did the king do first?
+    if (visited.has('creon_returns')) push("Creon ad oraculum missus est. Apollo locutus est: 'necator hic manet.'",
+                                            "Creon was sent to the oracle. Apollo declared: 'the killer remains here.'");
+    if (visited.has('tiresias_early') || visited.has('tiresias_scene')) push("rex Tiresiam vatem caecum vocavit.",
+                                                                              "The king summoned Tiresias the blind seer.");
+    if (visited.has('citizens')) push("rex cives miseros ipse rogavit.",
+                                       "The king himself questioned the wretched citizens.");
+
+    // Crossroads
+    if (visited.has('crossroads_clue')) push("una femina trivium narravit. iuvenis ibi Laium necavit.",
+                                              "A woman told of a crossroads where a young man had killed Laius.");
+
+    // Tiresias accusation
+    if (visited.has('tiresias_accuses')) push("Tiresias dixit: 'tu es scelus.' rex non credidit.",
+                                               "Tiresias declared: 'you are the crime.' The king did not believe.");
+
+    // Quarrel
+    if (visited.has('creon_quarrel')) push("rex Creonem accusavit. Iocasta intervenit.",
+                                            "The king accused Creon. Jocasta intervened.");
+
+    // Iocasta
+    if (visited.has('iocasta_truth')) push("Iocasta de oraculo veteri narravit. rex perterritus est.",
+                                            "Jocasta told of the old oracle. The king grew terrified.");
+
+    // Messenger
+    if (visited.has('messenger_arrives') || visited.has('messenger_reveal'))
+      push("nuntius ex Corintho venit: Polybus mortuus, sed pater verus non erat.",
+           "A messenger came from Corinth: Polybus was dead, and was not the true father.");
+
+    // Shepherd
+    if (visited.has('pastor_speaks')) push("pastor antiquus tandem omnia confessus est.",
+                                            "The old shepherd at last confessed everything.");
+
+    // Trait colour — top trait gives a sentence
+    const sorted = Object.entries(state.traits).filter(([, n]) => n > 0).sort((a, b) => b[1] - a[1]);
+    if (sorted.length) {
+      const top = sorted[0][0];
+      const traitLines = {
+        confront:   ["per fabulam, rex iratus erat. multos accusavit.", "Through the story, the king was angry. He accused many."],
+        proud:      ["rex superbus erat. nemini cessit.", "The king was proud. He yielded to no one."],
+        patient:    ["rex patiens erat. omnia patienter audivit.", "The king was patient. He heard everything calmly."],
+        pious:      ["rex deos timuit. fatum suum accepit.", "The king feared the gods. He accepted his fate."],
+        compassion: ["rex civibus suis benignus erat.", "The king was kind to his people."],
+        denial:     ["rex veritatem diu reiecit.", "The king long denied the truth."],
+      };
+      const t = traitLines[top];
+      if (t) push(t[0], t[1]);
+    }
+
+    // Ending
+    const endingLines = {
+      ending:          ["tandem rex se caecum fecit. urbem reliquit. fabula classica completa.",
+                        "At last the king blinded himself. He left the city. The classical tale is complete."],
+      ending_hubris:   ["rex iratus Tiresiam necavit. dei eum reliquerunt. furor regem cepit.",
+                        "The angry king had Tiresias killed. The gods abandoned him. Madness seized the king."],
+      ending_denial:   ["rex veritatem reiecit. cives eum eiecerunt. casus regis tristis.",
+                        "The king rejected the truth. The citizens cast him out. The king's fall was sad."],
+      ending_dignity:  ["rex ipse poenam suam dixit. cum Antigona discessit. Thebae salvae sunt.",
+                        "The king pronounced his own punishment. He departed with Antigone. Thebes was saved."],
+    };
+    const e = endingLines[state.current];
+    if (e) push(e[0], e[1]);
+
+    return { latinLines: latin, enLines: en };
+  }
+
+  // Render the ending footer: epilogue, traits, quiz score, fates known.
   function renderEndingFooter() {
+    const { correct, answered } = quizScore();
     const seen = state.endingsSeen.length;
     const total = ENDING_IDS.length;
+
     const sortedTraits = Object.entries(state.traits)
       .filter(([, n]) => n > 0)
       .sort((a, b) => b[1] - a[1])
@@ -254,16 +346,40 @@
       return `<li class="${cls}"><span class="fate-mark">${mark}</span><span class="fate-la">${escapeHtml(lbl.la)}</span><span class="fate-en">${escapeHtml(lbl.en)}</span></li>`;
     }).join('');
 
+    // Personalised Latin epilogue
+    const { latinLines, enLines } = buildEpilogue();
+    const epilogueHtml = latinLines.map((la, i) => `
+      <div class="epilogue-line translatable">
+        <p class="epilogue-latin">${latinize(la)}<button type="button" class="reveal-toggle" aria-pressed="false" aria-label="Reveal English translation">en</button></p>
+        <p class="epilogue-en line-en">${escapeHtml(enLines[i] || '')}</p>
+      </div>
+    `).join('');
+
+    const scoreHtml = answered === 0 ? '' : `
+      <div class="ending-score" aria-label="Quiz score">
+        <p class="ending-label">scientia tua <em>your knowledge</em></p>
+        <p class="score-number"><span class="score-correct">${correct}</span> <span class="score-divider">/</span> <span class="score-total">${answered}</span></p>
+        <p class="score-caption"><em>quaestiones rectae</em> — questions answered correctly</p>
+      </div>
+    `;
+
     return `
       <section class="ending-footer" aria-label="Reflection">
-        <div class="ending-traits">
-          <p class="ending-label">animus tuus erat <em>your character was</em></p>
-          <div class="trait-chips">${traitChips}</div>
+        <div class="ending-epilogue">
+          <p class="ending-label">fabula tua <em>your story</em></p>
+          <div class="epilogue-body">${epilogueHtml}</div>
         </div>
-        <div class="ending-fates">
-          <p class="ending-label">fata cognita <em>fates known</em> &nbsp;${seen} / ${total}</p>
-          <ul class="fate-list">${fatesList}</ul>
-          ${seen < total ? '<p class="ending-hint"><em>Press Iterum to play again — different choices lead to different fates.</em></p>' : '<p class="ending-hint"><em>You have walked all four paths. Magnum opus.</em></p>'}
+        <div class="ending-meta">
+          <div class="ending-traits">
+            <p class="ending-label">animus tuus erat <em>your character was</em></p>
+            <div class="trait-chips">${traitChips}</div>
+          </div>
+          ${scoreHtml}
+          <div class="ending-fates">
+            <p class="ending-label">fata cognita <em>fates known</em> &nbsp;${seen} / ${total}</p>
+            <ul class="fate-list">${fatesList}</ul>
+            ${seen < total ? '<p class="ending-hint"><em>Press Iterum to play again — different choices lead to different fates.</em></p>' : '<p class="ending-hint"><em>You have walked all four paths. Magnum opus.</em></p>'}
+          </div>
         </div>
       </section>
     `;
@@ -394,11 +510,19 @@
       ? `<div class="quiz-explain" role="status">${escapeHtml(quiz.explain)}</div>`
       : '';
 
+    // Once answered, show a running score so students can track their tally.
+    let scorePill = '';
+    if (answered) {
+      const { correct, answered: total } = quizScore();
+      scorePill = `<p class="quiz-score" aria-live="polite">scientia tua &nbsp;<strong>${correct}/${total}</strong>&nbsp; <em>questions correct so far</em></p>`;
+    }
+
     return `
       <section class="quiz" aria-label="Comprehension quiz">
         <h3>Quaestio: ${escapeHtml(quiz.q)}</h3>
         <div class="quiz-options">${optsHtml}</div>
         ${explain}
+        ${scorePill}
       </section>
     `;
   }
