@@ -20,13 +20,13 @@
     "titleEn": "Thebes in danger",
     "chapter": "Capitulum I",
     "setting": "the palace steps, citizens gathered below",
-    "latin": "salvete, cives! ego sum Oedipus, rex Thebarum. olim Sphingem necavi. nunc urbs in periculo est. pestis Thebas vexat. populus miser est. cur dei irati sunt? ego veritatem inveniam.",
+    "latin": "salvete, cives! ego sum Oedipus, rex Thebarum. olim Sphingem solvi. nunc urbs in periculo est. pestis Thebas vexat. populus miser est. cur dei irati sunt? ego veritatem inveniam.",
     "question": "quid facis, rex?",
     "questionEn": "What do you do, O king?",
     "chars": ["oedipus"],
     "choices": [
       {
-        "latin": "ad Creonem mitto. ad oraculum eat.",
+        "latin": "Creonem ad oraculum mitto.",
         "en": "Send Creon to the oracle of Apollo.",
         "next": "creon_returns",
         "clue": "Creon ad oraculum missus est"
@@ -113,7 +113,7 @@
     "titleEn": "In the city",
     "chapter": "Capitulum II",
     "setting": "the streets of Thebes",
-    "latin": "in urbem is. cives miseri sunt. infantes mortui sunt. una femina dicit: 'olim, ante Sphingem, rex noster Laius ad oraculum ibat. sed numquam rediit. in trivio mortuus est.'",
+    "latin": "in urbem eo. cives miseri sunt. infantes mortui sunt. una femina dicit: 'olim, ante Sphingem, rex noster Laius ad oraculum ibat. sed numquam rediit. in trivio mortuus est.'",
     "question": "quid nunc facis?",
     "questionEn": "What now?",
     "chars": ["oedipus"],
@@ -169,7 +169,7 @@
     "titleEn": "The accusation",
     "chapter": "Capitulum III",
     "setting": "the throne room — sudden silence",
-    "latin": "vates dicit: 'tu es scelus. tu Laium necavisti. tu rex et filius es. tu maritus et filius es.' rex non credit. 'caecus es! mentiris!'",
+    "latin": "vates dicit: 'tu es scelus. tu Laium necavisti. tu rex et filius es. tu maritus matris tuae es.' rex non credit. 'caecus es! mentiris!'",
     "question": "quomodo respondes?",
     "questionEn": "How do you respond?",
     "chars": ["tiresias", "oedipus"],
@@ -219,7 +219,7 @@
     "chars": ["pastor", "oedipus"],
     "choices": [
       {
-        "latin": "dic, senex! aut moreris!",
+        "latin": "dic, senex! aut morieris!",
         "en": "Threaten him — speak or die.",
         "next": "pastor_speaks",
         "clue": "pastor coactus"
