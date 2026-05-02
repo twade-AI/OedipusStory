@@ -189,7 +189,8 @@
           "denial"
         ]
       }
-    ]
+    ],
+    "sceneImage": "images/scenes/oracle_chamber.jpg"
   },
   "citizens": {
     "title": "In urbe",
@@ -265,7 +266,8 @@
           "denial"
         ]
       }
-    ]
+    ],
+    "sceneImage": "images/scenes/oracle_chamber.jpg"
   },
   "tiresias_accuses": {
     "title": "Accusatio",
@@ -344,7 +346,8 @@
           "confront"
         ]
       }
-    ]
+    ],
+    "sceneImage": "images/scenes/palace.jpg"
   },
   "pastor_hunt": {
     "title": "Pastor invenitur",
@@ -378,7 +381,8 @@
           "patient"
         ]
       }
-    ]
+    ],
+    "sceneImage": "images/scenes/approach.jpg"
   },
   "crossroads_clue": {
     "title": "Trivium",
@@ -491,7 +495,8 @@
           "patient"
         ]
       }
-    ]
+    ],
+    "sceneImage": "images/scenes/approach.jpg"
   },
   "messenger_reveal": {
     "title": "Nuntius narrat",
@@ -537,7 +542,8 @@
           "confront"
         ]
       }
-    ]
+    ],
+    "sceneImage": "images/scenes/approach.jpg"
   },
   "pastor_speaks": {
     "title": "Pastor tandem dicit",
@@ -580,7 +586,8 @@
           "confront"
         ]
       }
-    ]
+    ],
+    "sceneImage": "images/scenes/megaron.jpg"
   },
   "reckoning": {
     "title": "Iudicium regis",
@@ -635,7 +642,8 @@
           "patient"
         ]
       }
-    ]
+    ],
+    "sceneImage": "images/scenes/megaron.jpg"
   },
   "ending_hubris": {
     "title": "Furor regis",
@@ -651,7 +659,8 @@
       "iocasta"
     ],
     "isEnding": true,
-    "choices": []
+    "choices": [],
+    "sceneImage": "images/scenes/oracle_chamber.jpg"
   },
   "ending_denial": {
     "title": "Casus regis",
@@ -666,7 +675,8 @@
       "creon"
     ],
     "isEnding": true,
-    "choices": []
+    "choices": [],
+    "sceneImage": "images/scenes/palace.jpg"
   },
   "ending_dignity": {
     "title": "Pietas regis",
@@ -698,6 +708,7 @@
       "creon"
     ],
     "isEnding": true,
-    "choices": []
+    "choices": [],
+    "sceneImage": "images/scenes/jocasta_chamber.jpg"
   }
 }

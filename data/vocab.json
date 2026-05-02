@@ -1,7 +1,7 @@
 {
   "_schema": {
     "_description": "Latin word/phrase -> English translation. Keys are lowercase. The frontend uses this for click-to-reveal. Add words freely as the story expands.",
-    "_usage": "vocab[word.toLowerCase()] returns English meaning"
+    "_usage": "vocab[word.toLowerCase()] returns either a string (the English meaning) or an object { en, grammar } when a grammar callout is attached."
   },
   "salve": "hello",
   "salvete": "hello (to many)",
@@ -127,29 +127,56 @@
   "patientia": "patience",
   "exsulat": "he/she goes into exile",
   "lamp": "lamp",
-  "necavit": "he/she killed",
-  "necavi": "I killed",
+  "necavit": {
+    "en": "he/she killed",
+    "grammar": "Perfect tense (3rd sg) — a completed past action: 'he killed'."
+  },
+  "necavi": {
+    "en": "I killed",
+    "grammar": "Perfect tense (1st sg) — 'I have killed'. -āvi is the regular 1st-conjugation perfect ending."
+  },
   "necavisti": "you killed",
-  "necatus": "killed (was, m.)",
+  "necatus": {
+    "en": "killed (was, m.)",
+    "grammar": "Perfect passive participle — 'killed' (was killed). Used with 'est' to form the perfect passive: 'necatus est' = 'he was killed'."
+  },
   "necata": "killed (was, f.)",
   "interfecit": "he killed",
-  "interfectus": "killed (was)",
+  "interfectus": {
+    "en": "killed (was)",
+    "grammar": "Perfect passive participle — '(was) killed'."
+  },
   "occidit": "he killed",
   "videt": "he/she sees",
-  "videbo": "I will see",
+  "videbo": {
+    "en": "I will see",
+    "grammar": "Future tense (1st sg) — 'I will see'. -bō is the regular future ending for 2nd-conjugation verbs."
+  },
   "videbam": "I was seeing",
   "videre": "to see",
-  "vidi": "I have seen",
+  "vidi": {
+    "en": "I have seen",
+    "grammar": "Perfect tense (1st sg) — 'I have seen / I saw'."
+  },
   "vidit": "he/she saw",
   "vidisti": "you have seen",
   "vide": "look! / see!",
   "audit": "he/she hears",
-  "audi": "listen!",
+  "audi": {
+    "en": "listen!",
+    "grammar": "Imperative singular — 'listen!' (4th conjugation)."
+  },
   "audio": "I hear",
   "audire": "to hear",
   "dicit": "he/she says",
-  "dixit": "he/she said",
-  "dic": "speak!",
+  "dixit": {
+    "en": "he/she said",
+    "grammar": "Perfect tense (3rd sg) of dīcō — 'he/she said'. Note the irregular stem dix-."
+  },
+  "dic": {
+    "en": "speak!",
+    "grammar": "Imperative singular of dīcō — 'speak!'. One of four irregular shortened imperatives (dīc, dūc, fac, fer)."
+  },
   "dico": "I say",
   "rogat": "he/she asks",
   "rogavit": "asked",
@@ -160,7 +187,10 @@
   "veniunt": "they come",
   "voco": "I call / summon",
   "vocat": "he/she calls",
-  "fugit": "he/she fled",
+  "fugit": {
+    "en": "he/she fled",
+    "grammar": "Perfect tense (3rd sg) of fugiō — 'he/she fled'."
+  },
   "fuge": "flee!",
   "fugi": "I fled",
   "manet": "he/she remains",
@@ -168,9 +198,15 @@
   "curro": "I run",
   "redit": "he/she returns",
   "redeo": "I return",
-  "rediit": "he/she returned",
+  "rediit": {
+    "en": "he/she returned",
+    "grammar": "Perfect tense (3rd sg) of redeō — 'he/she returned'."
+  },
   "ire": "to go",
-  "eat": "let him go",
+  "eat": {
+    "en": "let him go",
+    "grammar": "Present subjunctive (3rd sg) — used as a 'jussive' meaning 'let him go'."
+  },
   "ibat": "he/she was going",
   "is": "you go",
   "investigat": "he/she investigates",
@@ -188,17 +224,26 @@
   "potest": "he/she can",
   "credit": "he/she believes",
   "non credit": "does not believe",
-  "solvit": "he/she solved",
+  "solvit": {
+    "en": "he/she solved",
+    "grammar": "Perfect tense (3rd sg) — 'he/she solved'. Same form as the present in this verb; context is what tells you."
+  },
   "vexat": "harasses / troubles",
   "servavi": "I saved",
   "serva": "save!",
   "tace": "be silent!",
   "taces": "you are silent",
-  "noli": "do not!",
+  "noli": {
+    "en": "do not!",
+    "grammar": "Negative imperative — used with an infinitive: 'do not (verb)'. e.g. 'noli quaerere' = 'do not seek'."
+  },
   "nolite": "do not (pl.)",
   "quaerere": "to ask / to seek",
   "quaero": "I seek",
-  "moreris": "you will die",
+  "moreris": {
+    "en": "you will die",
+    "grammar": "Deponent verb — 'you are dying' (present). Future is 'morieris'."
+  },
   "mori": "to die",
   "timere": "to fear",
   "duxisti": "you led / married",
@@ -209,14 +254,20 @@
   "dedi": "I gave",
   "invenit": "he/she finds / found",
   "inveniunt": "they find",
-  "inveniam": "I will find",
+  "inveniam": {
+    "en": "I will find",
+    "grammar": "Future tense (1st sg) — 'I will find'. -iam is the regular future for 4th-conjugation verbs."
+  },
   "inveni": "I found",
   "invenitur": "he/she is found",
   "agnoscitur": "is recognised",
   "coactus": "compelled",
   "tractatus": "treated",
   "locutus": "having spoken",
-  "mentiris": "you are lying",
+  "mentiris": {
+    "en": "you are lying",
+    "grammar": "Deponent verb (passive form, active meaning) — 'you are lying'."
+  },
   "flet": "he/she weeps",
   "relinquit": "he/she leaves",
   "facis": "you do / you make",
@@ -227,13 +278,22 @@
   "sentit": "he/she feels / senses",
   "narrat": "he/she tells",
   "incipit": "begins",
-  "necabit": "he/she will kill",
+  "necabit": {
+    "en": "he/she will kill",
+    "grammar": "Future tense (3rd sg) — 'he/she will kill'."
+  },
   "necesse": "necessary",
   "exspecto": "I wait for",
   "mitto": "I send",
-  "missus": "sent (was)",
+  "missus": {
+    "en": "sent (was)",
+    "grammar": "Perfect passive participle — '(was) sent'. With 'est' = 'he was sent'."
+  },
   "misit": "he/she sent",
-  "vocatus": "summoned (was)",
+  "vocatus": {
+    "en": "summoned (was)",
+    "grammar": "Perfect passive participle — '(was) summoned'."
+  },
   "invenite": "find! (pl.)",
   "inventus": "found (was)",
   "interrogata": "questioned (f.)",
@@ -243,8 +303,14 @@
   "accusavit": "he/she accused",
   "accusatio": "the accusation",
   "confessus": "having confessed",
-  "solvi": "I solved",
-  "morieris": "you will die",
+  "solvi": {
+    "en": "I solved",
+    "grammar": "Perfect tense (1st sg) — 'I have solved'."
+  },
+  "morieris": {
+    "en": "you will die",
+    "grammar": "Future tense of the deponent verb morior — 'you will die'. Deponents look passive but are translated actively."
+  },
   "eo": "I go",
   "in": "in / into",
   "ad": "to / towards",
@@ -258,7 +324,10 @@
   "non": "not",
   "aut": "or",
   "de": "about / concerning",
-  "quod": "because",
+  "quod": {
+    "en": "because",
+    "grammar": "Conjunction — 'because'. Also used as the neuter relative pronoun 'which/that'."
+  },
   "ita": "yes / so",
   "minime": "no / not at all",
   "fortasse": "perhaps",
@@ -270,9 +339,18 @@
   "numquam": "never",
   "iterum": "again",
   "quoque": "also",
-  "quis": "who?",
-  "quid": "what?",
-  "cur": "why?",
+  "quis": {
+    "en": "who?",
+    "grammar": "Interrogative pronoun — 'who?'. Quis Laium necavit? = 'Who killed Laius?'"
+  },
+  "quid": {
+    "en": "what?",
+    "grammar": "Interrogative pronoun (neuter) — 'what?'. The masc/fem form is 'quis' (who?)."
+  },
+  "cur": {
+    "en": "why?",
+    "grammar": "Interrogative — 'why?'."
+  },
   "ubi": "where?",
   "quomodo": "how?",
   "rogasne": "are you asking?",
@@ -319,7 +397,10 @@
   "solus": "alone / only",
   "ipse": "himself",
   "hic": "this man / here",
-  "qui": "who / which",
+  "qui": {
+    "en": "who / which",
+    "grammar": "Relative pronoun — 'who / which' (m. sg). Introduces a subordinate clause: 'pastor qui Laium vidit' = 'the shepherd who saw Laius'."
+  },
   "eum": "him",
   "meum": "my (object, m.)",
   "tuae": "your (f.) / of your (f.)",
@@ -357,7 +438,10 @@
   "maneo": "I remain",
   "manebo": "I will remain",
   "mortem": "death (object)",
-  "meretur": "he/she deserves",
+  "meretur": {
+    "en": "he/she deserves",
+    "grammar": "Deponent verb — 'he/she deserves'."
+  },
   "capite": "seize! (pl.)",
   "oculos": "eyes (object)",
   "eripio": "I tear out / I snatch away",
@@ -399,7 +483,10 @@
   "voluntate": "by the will of",
   "antigona": "Antigone",
   "eius": "his / her / its",
-  "sequitur": "he/she follows",
+  "sequitur": {
+    "en": "he/she follows",
+    "grammar": "Deponent verb — 'he/she follows'."
+  },
   "fida": "faithful (f.)",
   "filia": "daughter",
   "placati": "appeased (m. pl.)",
@@ -431,7 +518,10 @@
   "iam": "already / now",
   "monstrum": "monster",
   "ambulat": "he/she/it walks",
-  "responde": "answer! / respond!",
+  "responde": {
+    "en": "answer! / respond!",
+    "grammar": "Imperative singular — 'answer!' (2nd conjugation)."
+  },
   "macte": "well done!",
   "leo": "a lion",
   "cogita": "think!",
@@ -487,7 +577,10 @@
   "accipit": "he/she accepts",
   "iubet": "he/she orders",
   "pavet": "he/she is afraid",
-  "pereat": "let him perish",
+  "pereat": {
+    "en": "let him perish",
+    "grammar": "Present subjunctive of pereō — used as a jussive: 'let him perish'."
+  },
   "reginam": "queen (object)",
   "repellit": "he/she rejects / drives back",
   "silere": "to be silent",
