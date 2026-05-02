@@ -1,0 +1,96 @@
+{
+  "_schema": {
+    "_description": "Comprehension quizzes keyed by scene ID. When a student arrives at that scene, the quiz appears. Each has 4 options, one correct, plus an explanation shown after answering.",
+    "_fields": {
+      "q": "Question text (English)",
+      "options": "Array of 4 answer options",
+      "correct": "Index of correct answer (0-3)",
+      "explain": "Explanation shown after answering"
+    },
+    "_note": "Quizzes are keyed to scene IDs from scenes.json. Add or remove freely — only scenes with matching keys will show a quiz."
+  },
+
+  "creon_returns": {
+    "q": "What did the oracle of Apollo say?",
+    "options": [
+      "The plague will end if Thebes builds a temple",
+      "The killer of Laius is hiding in Thebes",
+      "Oedipus must leave the city",
+      "The Sphinx will return"
+    ],
+    "correct": 1,
+    "explain": "Apollo said a killer remains in the city — and the plague will not end until he is found."
+  },
+
+  "tiresias_accuses": {
+    "q": "What does 'tu es scelus' mean?",
+    "options": [
+      "You are wise",
+      "You are the king",
+      "You are the crime",
+      "You are blind"
+    ],
+    "correct": 2,
+    "explain": "Scelus means 'crime'. Tiresias accuses Oedipus directly — a huge moment in the play."
+  },
+
+  "iocasta_truth": {
+    "q": "Why does Jocasta think oracles are false?",
+    "options": [
+      "Because Tiresias lied to her",
+      "Because her baby died — so the prophecy didn't happen",
+      "Because Apollo never spoke to her",
+      "Because Laius was never killed"
+    ],
+    "correct": 1,
+    "explain": "She believes her baby died on the mountain, so the prophecy that 'her son will kill his father' couldn't have come true. She is wrong."
+  },
+
+  "messenger_reveal": {
+    "q": "Who actually gave baby Oedipus to the messenger?",
+    "options": [
+      "Polybus, king of Corinth",
+      "Tiresias the prophet",
+      "The shepherd of Laius",
+      "Apollo himself"
+    ],
+    "correct": 2,
+    "explain": "The shepherd handed the baby to the Corinthian messenger on the mountain. The chain of evidence is closing."
+  },
+
+  "ending": {
+    "q": "Why does Oedipus say he was 'blind' before, but now will 'truly see'?",
+    "options": [
+      "Because Tiresias gave him sight",
+      "Because he could see with his eyes but not the truth — now he sees the truth",
+      "Because his eyes were healed",
+      "Because Apollo restored him"
+    ],
+    "correct": 1,
+    "explain": "The whole tragedy turns on this: Oedipus had perfect eyes but was blind to the truth. Tiresias was blind in the eyes but saw everything. The play's central image."
+  },
+
+  "tiresias_scene": {
+    "q": "Tiresias says 'noli quaerere' — what does this mean?",
+    "options": [
+      "Do not be afraid",
+      "Do not ask",
+      "Do not leave",
+      "Do not lie"
+    ],
+    "correct": 1,
+    "explain": "Noli + infinitive is the standard way to say 'do not...' in Latin. Quaerere = 'to ask / to seek'. Tiresias is warning Oedipus to stop investigating."
+  },
+
+  "pastor_speaks": {
+    "q": "What does the shepherd reveal about Oedipus?",
+    "options": [
+      "Oedipus was actually born in Corinth",
+      "Oedipus killed Laius in self-defence",
+      "Oedipus is the son of Laius and Jocasta — not the son of Polybus",
+      "Oedipus was the one who fled the crossroads"
+    ],
+    "correct": 2,
+    "explain": "The shepherd was given the baby by Jocasta to leave on the mountain — but he saved the baby and gave it to the Corinthian messenger. The 'son of Corinth' is really the son of Thebes."
+  }
+}
