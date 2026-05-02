@@ -24,6 +24,7 @@
     traits: {},        // { tag: count } — accumulated through choices
     endingsSeen: [],   // ending scene IDs the student has reached, persisted across resets
     sphinxSolved: false, // once the Sphinx is defeated, replays skip the prologue
+    mode: 'discipulus',  // 'tiro' (all English visible) | 'discipulus' (reveal on tap) | 'magister' (Latin only)
     view: 'story',
   };
 
@@ -57,6 +58,7 @@
         traits: state.traits,
         endingsSeen: state.endingsSeen,
         sphinxSolved: state.sphinxSolved,
+        mode: state.mode,
       }));
     } catch (_) { /* private mode etc. */ }
   }
@@ -78,6 +80,9 @@
         // aren't bounced back to the riddle on reset.
         if (typeof s.sphinxSolved === 'boolean') state.sphinxSolved = s.sphinxSolved;
         else if (s.current && s.current !== 'sphinx_riddle') state.sphinxSolved = true;
+        if (typeof s.mode === 'string' && ['tiro','discipulus','magister'].includes(s.mode)) {
+          state.mode = s.mode;
+        }
       }
     } catch (_) { /* ignore */ }
   }
@@ -672,6 +677,27 @@
     if (btn.id === 'reset-btn') return;
     btn.addEventListener('click', () => setView(btn.dataset.view));
   });
+  // Apply the difficulty mode to the body so CSS can scale English support.
+  function applyMode() {
+    document.body.classList.remove('mode-tiro', 'mode-discipulus', 'mode-magister');
+    document.body.classList.add(`mode-${state.mode}`);
+    const sel = document.getElementById('mode-select');
+    if (sel && sel.value !== state.mode) sel.value = state.mode;
+  }
+
+  // Wire the Modus selector.
+  const modeSelect = document.getElementById('mode-select');
+  if (modeSelect) {
+    modeSelect.addEventListener('change', (e) => {
+      const v = e.target.value;
+      if (['tiro', 'discipulus', 'magister'].includes(v)) {
+        state.mode = v;
+        save();
+        applyMode();
+      }
+    });
+  }
+
   document.getElementById('reset-btn').addEventListener('click', () => {
     if (!confirm('Reset the story? Your unlocked fates and the Sphinx victory will be kept.')) return;
     // Skip the prologue riddle on replay if already defeated.
@@ -714,6 +740,7 @@
       data.vocab = stripSchema(vocab);
       data.quizzes = stripSchema(quizzes);
       load();
+      applyMode();
       render();
     } catch (err) {
       app.innerHTML = `
