@@ -14,7 +14,6 @@
       "isEnding": "true if this is a story ending (no choices)"
     }
   },
-
   "start": {
     "title": "Thebae in periculo",
     "titleEn": "Thebes in danger",
@@ -23,29 +22,39 @@
     "latin": "salvete, cives! ego sum Oedipus, rex Thebarum. olim Sphingem solvi. nunc urbs in periculo est. pestis Thebas vexat. populus miser est. cur dei irati sunt? ego veritatem inveniam.",
     "question": "quid facis, rex?",
     "questionEn": "What do you do, O king?",
-    "chars": ["oedipus"],
+    "chars": [
+      "oedipus"
+    ],
     "choices": [
       {
         "latin": "Creonem ad oraculum mitto.",
         "en": "Send Creon to the oracle of Apollo.",
         "next": "creon_returns",
-        "clue": "Creon ad oraculum missus est"
+        "clue": "Creon ad oraculum missus est",
+        "tags": [
+          "pious"
+        ]
       },
       {
         "latin": "Tiresiam vatem voco.",
         "en": "Summon Tiresias the blind prophet.",
         "next": "tiresias_early",
-        "clue": "vates vocatus est"
+        "clue": "vates vocatus est",
+        "tags": [
+          "patient"
+        ]
       },
       {
         "latin": "ipse cives rogo.",
         "en": "Question the citizens myself.",
         "next": "citizens",
-        "clue": "investigatio incipit"
+        "clue": "investigatio incipit",
+        "tags": [
+          "compassion"
+        ]
       }
     ]
   },
-
   "creon_returns": {
     "title": "Creon redit",
     "titleEn": "Creon returns",
@@ -54,29 +63,40 @@
     "latin": "Creon ad palatium venit. Apollo dixit: 'in urbe scelus est. Laius rex necatus est. necator hic manet. necatorem invenite!'",
     "question": "scelus antiquum! quis Laium necavit?",
     "questionEn": "An old crime! Who killed Laius?",
-    "chars": ["creon", "oedipus"],
+    "chars": [
+      "creon",
+      "oedipus"
+    ],
     "choices": [
       {
         "latin": "Tiresiam voco. ille vates est.",
         "en": "Summon Tiresias — he is a prophet.",
         "next": "tiresias_scene",
-        "clue": "Tiresias scit"
+        "clue": "Tiresias scit",
+        "tags": [
+          "patient"
+        ]
       },
       {
         "latin": "pastorem antiquum quaero.",
         "en": "Search for the old shepherd who survived.",
         "next": "pastor_hunt",
-        "clue": "pastor vidit"
+        "clue": "pastor vidit",
+        "tags": [
+          "patient"
+        ]
       },
       {
         "latin": "civem rogo: 'ubi Laius mortuus est?'",
         "en": "Ask a citizen where Laius died.",
         "next": "crossroads_clue",
-        "clue": "Laius in trivio mortuus"
+        "clue": "Laius in trivio mortuus",
+        "tags": [
+          "compassion"
+        ]
       }
     ]
   },
-
   "tiresias_early": {
     "title": "Vates caecus",
     "titleEn": "The blind seer",
@@ -85,29 +105,42 @@
     "latin": "Tiresias venit. caecus est sed multa videt. 'rex,' dicit, 'noli rogare. veritas mala est.'",
     "question": "rogasne vatem?",
     "questionEn": "Do you press the prophet?",
-    "chars": ["tiresias", "oedipus"],
+    "chars": [
+      "tiresias",
+      "oedipus"
+    ],
     "choices": [
       {
         "latin": "dic, vates! ego rex sum!",
         "en": "Demand the truth — you are the king.",
         "next": "tiresias_accuses",
-        "clue": "rex iratus"
+        "clue": "rex iratus",
+        "tags": [
+          "confront",
+          "proud"
+        ]
       },
       {
         "latin": "tace, vates. Creonem exspecto.",
         "en": "Send him away and wait for Creon.",
         "next": "creon_returns",
-        "clue": "patientia regis"
+        "clue": "patientia regis",
+        "tags": [
+          "patient"
+        ]
       },
       {
         "latin": "cur taces? Creon te misit?",
         "en": "Accuse him of plotting with Creon.",
         "next": "tiresias_accuses",
-        "clue": "suspicio in Creonem"
+        "clue": "suspicio in Creonem",
+        "tags": [
+          "confront",
+          "denial"
+        ]
       }
     ]
   },
-
   "citizens": {
     "title": "In urbe",
     "titleEn": "In the city",
@@ -116,29 +149,39 @@
     "latin": "in urbem eo. cives miseri sunt. infantes mortui sunt. una femina dicit: 'olim, ante Sphingem, rex noster Laius ad oraculum ibat. sed numquam rediit. in trivio mortuus est.'",
     "question": "quid nunc facis?",
     "questionEn": "What now?",
-    "chars": ["oedipus"],
+    "chars": [
+      "oedipus"
+    ],
     "choices": [
       {
         "latin": "ad palatium redeo. Creonem audio.",
         "en": "Return to the palace and hear Creon.",
         "next": "creon_returns",
-        "clue": "Laius in trivio mortuus"
+        "clue": "Laius in trivio mortuus",
+        "tags": [
+          "patient"
+        ]
       },
       {
         "latin": "Tiresiam voco.",
         "en": "Summon Tiresias.",
         "next": "tiresias_scene",
-        "clue": "Laius in trivio mortuus"
+        "clue": "Laius in trivio mortuus",
+        "tags": [
+          "patient"
+        ]
       },
       {
         "latin": "pastorem quaero qui Laium vidit.",
         "en": "Hunt for the shepherd who was there.",
         "next": "pastor_hunt",
-        "clue": "unus pastor fugit"
+        "clue": "unus pastor fugit",
+        "tags": [
+          "patient"
+        ]
       }
     ]
   },
-
   "tiresias_scene": {
     "title": "Tiresias dicit",
     "titleEn": "Tiresias speaks",
@@ -147,23 +190,32 @@
     "latin": "Tiresias venit. 'rex, noli quaerere. tu nescis quis es. veritas mala est.' Oedipus iratus est.",
     "question": "rex iratus, quid dicit?",
     "questionEn": "What does the angry king say?",
-    "chars": ["tiresias", "oedipus"],
+    "chars": [
+      "tiresias",
+      "oedipus"
+    ],
     "choices": [
       {
         "latin": "dic, vates! quis Laium necavit?",
         "en": "Force him to name the killer.",
         "next": "tiresias_accuses",
-        "clue": "rex vatem cogit"
+        "clue": "rex vatem cogit",
+        "tags": [
+          "confront"
+        ]
       },
       {
         "latin": "Creon te misit! tu mentiris!",
         "en": "Accuse him of conspiring with Creon.",
         "next": "creon_quarrel",
-        "clue": "rex Creonem accusat"
+        "clue": "rex Creonem accusat",
+        "tags": [
+          "confront",
+          "denial"
+        ]
       }
     ]
   },
-
   "tiresias_accuses": {
     "title": "Accusatio",
     "titleEn": "The accusation",
@@ -172,23 +224,31 @@
     "latin": "vates dicit: 'tu es scelus. tu Laium necavisti. tu rex et filius es. tu maritus matris tuae es.' rex non credit. 'caecus es! mentiris!'",
     "question": "quomodo respondes?",
     "questionEn": "How do you respond?",
-    "chars": ["tiresias", "oedipus"],
+    "chars": [
+      "tiresias",
+      "oedipus"
+    ],
     "choices": [
       {
         "latin": "Iocastam rogo de Laio.",
         "en": "Ask Jocasta about her first husband.",
         "next": "iocasta_truth",
-        "clue": "vates regem accusavit"
+        "clue": "vates regem accusavit",
+        "tags": [
+          "patient"
+        ]
       },
       {
         "latin": "pastorem quaero. ille vidit.",
         "en": "Find the shepherd who survived.",
         "next": "pastor_hunt",
-        "clue": "vates regem accusavit"
+        "clue": "vates regem accusavit",
+        "tags": [
+          "patient"
+        ]
       }
     ]
   },
-
   "creon_quarrel": {
     "title": "Cum Creone",
     "titleEn": "Quarrel with Creon",
@@ -197,17 +257,43 @@
     "latin": "Creon venit. 'frater, non sum traditor! Apollo locutus est, non ego!' Iocasta venit et dicit: 'tace, marite. fratrem meum noli accusare.'",
     "question": "Iocastam audis?",
     "questionEn": "Do you listen to Jocasta?",
-    "chars": ["creon", "oedipus", "iocasta"],
+    "chars": [
+      "creon",
+      "oedipus",
+      "iocasta"
+    ],
     "choices": [
       {
         "latin": "Iocasta, dic mihi de Laio.",
-        "en": "Ask Jocasta about Laius's death.",
+        "en": "Listen to Jocasta and ask her about Laius.",
         "next": "iocasta_truth",
-        "clue": "Iocasta interrogata"
+        "clue": "Iocasta interrogata",
+        "tags": [
+          "patient"
+        ]
+      },
+      {
+        "latin": "Creo, ignosce mihi. iratus eram.",
+        "en": "Beg Creon's forgiveness — admit your anger.",
+        "next": "iocasta_truth",
+        "clue": "rex se humiliat",
+        "tags": [
+          "compassion",
+          "patient"
+        ]
+      },
+      {
+        "latin": "fugite, omnes! solus stare debeo.",
+        "en": "Drive everyone out — you face this alone.",
+        "next": "iocasta_truth",
+        "clue": "rex omnes pellit",
+        "tags": [
+          "proud",
+          "confront"
+        ]
       }
     ]
   },
-
   "pastor_hunt": {
     "title": "Pastor invenitur",
     "titleEn": "The shepherd is found",
@@ -216,23 +302,32 @@
     "latin": "milites pastorem inveniunt. senex est et perterritus. 'rex,' dicit, 'noli rogare. ego nihil scio.'",
     "question": "quomodo eum rogas?",
     "questionEn": "How do you question him?",
-    "chars": ["pastor", "oedipus"],
+    "chars": [
+      "pastor",
+      "oedipus"
+    ],
     "choices": [
       {
         "latin": "dic, senex! aut morieris!",
         "en": "Threaten him — speak or die.",
         "next": "pastor_speaks",
-        "clue": "pastor coactus"
+        "clue": "pastor coactus",
+        "tags": [
+          "confront"
+        ]
       },
       {
         "latin": "noli timere. veritatem volo.",
         "en": "Reassure him — promise safety.",
         "next": "pastor_speaks",
-        "clue": "pastor benigne tractatus"
+        "clue": "pastor benigne tractatus",
+        "tags": [
+          "compassion",
+          "patient"
+        ]
       }
     ]
   },
-
   "crossroads_clue": {
     "title": "Trivium",
     "titleEn": "The crossroads",
@@ -241,23 +336,30 @@
     "latin": "civis dicit: 'Laius in trivio mortuus est. inter Thebas et Delphos. iuvenis eum necavit. unus pastor fugit.'",
     "question": "rex perterritus est. cur?",
     "questionEn": "The king is shaken. Why?",
-    "chars": ["oedipus"],
+    "chars": [
+      "oedipus"
+    ],
     "choices": [
       {
         "latin": "Iocastam rogo: 'ubi Laius necatus est?'",
         "en": "Confront Jocasta about the location.",
         "next": "iocasta_truth",
-        "clue": "trivium memoria mala"
+        "clue": "trivium memoria mala",
+        "tags": [
+          "confront"
+        ]
       },
       {
         "latin": "pastorem quaero qui fugit.",
         "en": "Hunt the shepherd who fled.",
         "next": "pastor_hunt",
-        "clue": "pastor solus testis"
+        "clue": "pastor solus testis",
+        "tags": [
+          "patient"
+        ]
       }
     ]
   },
-
   "iocasta_truth": {
     "title": "Iocasta narrat",
     "titleEn": "Jocasta tells the truth",
@@ -266,23 +368,32 @@
     "latin": "Iocasta dicit: 'oracula falsa sunt! oraculum dixit: filius meus patrem necabit. sed infans noster in monte mortuus est. Laius in trivio mortuus est, ab iuvene.'",
     "question": "rex perterritus. quid sentit?",
     "questionEn": "The king is terrified. Why?",
-    "chars": ["iocasta", "oedipus"],
+    "chars": [
+      "iocasta",
+      "oedipus"
+    ],
     "choices": [
       {
         "latin": "ego in trivio virum necavi olim...",
         "en": "Confess: 'I once killed a man at a crossroads.'",
         "next": "messenger_arrives",
-        "clue": "rex confessus est"
+        "clue": "rex confessus est",
+        "tags": [
+          "pious",
+          "patient"
+        ]
       },
       {
         "latin": "pastorem voco! ille vidit!",
         "en": "Summon the only witness — the shepherd.",
         "next": "messenger_arrives",
-        "clue": "testis necesse"
+        "clue": "testis necesse",
+        "tags": [
+          "patient"
+        ]
       }
     ]
   },
-
   "messenger_arrives": {
     "title": "Nuntius ex Corintho",
     "titleEn": "A messenger from Corinth",
@@ -291,17 +402,23 @@
     "latin": "nuntius venit. 'rex, Polybus pater tuus mortuus est. tu nunc rex Corinthi es!' Iocasta laeta est: 'ecce! oracula falsa sunt!' sed nuntius dicit: 'rex, Polybus non erat pater tuus verus.'",
     "question": "quid? non pater meus?",
     "questionEn": "What — not my father?",
-    "chars": ["nuntius", "oedipus", "iocasta"],
+    "chars": [
+      "nuntius",
+      "oedipus",
+      "iocasta"
+    ],
     "choices": [
       {
         "latin": "dic, nuntie! quis pater meus est?",
         "en": "Demand the truth from the messenger.",
         "next": "messenger_reveal",
-        "clue": "Polybus non pater verus"
+        "clue": "Polybus non pater verus",
+        "tags": [
+          "patient"
+        ]
       }
     ]
   },
-
   "messenger_reveal": {
     "title": "Nuntius narrat",
     "titleEn": "The messenger explains",
@@ -310,17 +427,23 @@
     "latin": "nuntius dicit: 'olim, infans, in monte te inveni. pastor mihi dedit. ego te ad Polybum portavi.' Iocasta perterrita est. 'tace! tace! noli quaerere!' et fugit.",
     "question": "cur regina fugit?",
     "questionEn": "Why does the queen flee?",
-    "chars": ["nuntius", "oedipus", "iocasta"],
+    "chars": [
+      "nuntius",
+      "oedipus",
+      "iocasta"
+    ],
     "choices": [
       {
         "latin": "pastorem voco. ego veritatem volo.",
         "en": "Summon the shepherd — I will know all.",
         "next": "pastor_speaks",
-        "clue": "infans in monte inventus"
+        "clue": "infans in monte inventus",
+        "tags": [
+          "patient"
+        ]
       }
     ]
   },
-
   "pastor_speaks": {
     "title": "Pastor tandem dicit",
     "titleEn": "The shepherd at last",
@@ -329,26 +452,136 @@
     "latin": "pastor flet. 'rex, infans tu eras. Iocasta regina mihi te dedit. dixit: \"in monte mori debet.\" sed ego te servavi. tu filius Lai et Iocastae es. tu patrem necavisti. matrem in matrimonium duxisti.'",
     "question": "veritas tandem nota est. quid facis?",
     "questionEn": "The truth is known. What now?",
-    "chars": ["pastor", "oedipus"],
+    "chars": [
+      "pastor",
+      "oedipus"
+    ],
     "choices": [
       {
         "latin": "ad Iocastam curro!",
         "en": "Run to find Jocasta.",
-        "next": "ending",
-        "clue": "VERITAS COMPLETA"
+        "next": "reckoning",
+        "clue": "veritas tota nota",
+        "tags": [
+          "patient"
+        ]
       }
     ]
   },
-
-  "ending": {
-    "title": "Finis",
-    "titleEn": "The ending",
+  "reckoning": {
+    "title": "Iudicium regis",
+    "titleEn": "The king's reckoning",
     "chapter": "Capitulum VII",
+    "setting": "the throne room — silence — the king alone with his fate",
+    "latin": "rex ad cubiculum reginae currit. sed Iocasta mortua est — se necavit. rex solus stat. fata sua videt. veritas tota nota est. quid faciet?",
+    "question": "quomodo te ipsum iudicas, rex?",
+    "questionEn": "How do you judge yourself, O king?",
+    "chars": [
+      "oedipus",
+      "iocasta"
+    ],
+    "choices": [
+      {
+        "latin": "vates mentitus est! ego rex sum, ego maneo!",
+        "en": "Deny everything — the prophet lied. You remain king.",
+        "next": "ending_denial",
+        "clue": "rex veritatem reicit",
+        "tags": [
+          "denial",
+          "proud"
+        ]
+      },
+      {
+        "latin": "Tiresias mortem meretur! milites! eum capite!",
+        "en": "Have Tiresias killed for his curse on your house.",
+        "next": "ending_hubris",
+        "clue": "rex vatem damnat",
+        "tags": [
+          "confront",
+          "proud"
+        ]
+      },
+      {
+        "latin": "vae mihi! olim caecus eram. nunc oculos eripio.",
+        "en": "Blind yourself in grief and accept the gods' justice.",
+        "next": "ending",
+        "clue": "rex se caecum facit",
+        "tags": [
+          "pious"
+        ]
+      },
+      {
+        "latin": "ego ipse poenam meam dico. exsulabo. urbem servabo.",
+        "en": "Pronounce your own exile — save Thebes by leaving.",
+        "next": "ending_dignity",
+        "clue": "rex sui ipsius iudex",
+        "tags": [
+          "pious",
+          "compassion",
+          "patient"
+        ]
+      }
+    ]
+  },
+  "ending_hubris": {
+    "title": "Furor regis",
+    "titleEn": "The king's madness",
+    "chapter": "Capitulum VIII",
+    "setting": "the palace at night — blood on the floor — the city dying",
+    "latin": "milites Tiresiam necant. dei silentes sunt. pestis crescit. populus moritur. Iocasta in cubiculo plorat. rex solus errat. mens regis fracta est. dei eum reliquerunt. fabula tragica est.",
+    "question": "fabula tragica completa.",
+    "questionEn": "A tragedy of pride.",
+    "chars": [
+      "oedipus",
+      "tiresias",
+      "iocasta"
+    ],
+    "isEnding": true,
+    "choices": []
+  },
+  "ending_denial": {
+    "title": "Casus regis",
+    "titleEn": "The king's fall",
+    "chapter": "Capitulum VIII",
+    "setting": "the palace gates — the citizens revolt — the king cast out",
+    "latin": "rex non credit. clamat: 'ego rex sum! ego maneo!' sed cives clamant contra eum. Creon dicit: 'exi, frater. tu non es rex verus.' rex perterritus fugit. Thebae sine rege manent. veritas non auditur sed in tenebris dormit.",
+    "question": "fabula sine pace finita est.",
+    "questionEn": "A story without peace.",
+    "chars": [
+      "oedipus",
+      "creon"
+    ],
+    "isEnding": true,
+    "choices": []
+  },
+  "ending_dignity": {
+    "title": "Pietas regis",
+    "titleEn": "The dignified king",
+    "chapter": "Capitulum VIII",
+    "setting": "the palace steps at dawn — the king departs with his daughter",
+    "latin": "rex ad cives venit. 'cives Thebani, ego scelus sum. urbem servabo. exsulabo voluntate mea.' populus tacet. dolet. rex urbem relinquit. Antigona, filia eius, fida, eum sequitur. dei placati sunt. Thebae salvae sunt. fabula gravis sed honesta est.",
+    "question": "fabula honesta completa.",
+    "questionEn": "A solemn but honourable end.",
+    "chars": [
+      "oedipus",
+      "creon"
+    ],
+    "isEnding": true,
+    "choices": []
+  },
+  "ending": {
+    "title": "Veritas videns",
+    "titleEn": "Seeing the truth",
+    "chapter": "Capitulum VIII",
     "setting": "the palace, Jocasta's chamber",
     "latin": "rex ad cubiculum reginae currit. sed Iocasta mortua est — se necavit. rex tristis est et fatum suum videt. dicit: 'olim caecus eram quod videbam. nunc vero videbo.' urbem relinquit. exsulat. Creon nunc rex est. Thebae salvae sunt.",
     "question": "fabula completa est.",
     "questionEn": "The story is complete.",
-    "chars": ["oedipus", "iocasta", "creon"],
+    "chars": [
+      "oedipus",
+      "iocasta",
+      "creon"
+    ],
     "isEnding": true,
     "choices": []
   }

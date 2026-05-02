@@ -9,7 +9,6 @@
     },
     "_note": "Quizzes are keyed to scene IDs from scenes.json. Add or remove freely — only scenes with matching keys will show a quiz."
   },
-
   "creon_returns": {
     "q": "What did the oracle of Apollo say?",
     "options": [
@@ -21,7 +20,6 @@
     "correct": 1,
     "explain": "Apollo said a killer remains in the city — and the plague will not end until he is found."
   },
-
   "tiresias_accuses": {
     "q": "What does 'tu es scelus' mean?",
     "options": [
@@ -33,7 +31,6 @@
     "correct": 2,
     "explain": "Scelus means 'crime'. Tiresias accuses Oedipus directly — a huge moment in the play."
   },
-
   "iocasta_truth": {
     "q": "Why does Jocasta think oracles are false?",
     "options": [
@@ -45,7 +42,6 @@
     "correct": 1,
     "explain": "She believes her baby died on the mountain, so the prophecy that 'her son will kill his father' couldn't have come true. She is wrong."
   },
-
   "messenger_reveal": {
     "q": "Who actually gave baby Oedipus to the messenger?",
     "options": [
@@ -57,7 +53,6 @@
     "correct": 2,
     "explain": "The shepherd handed the baby to the Corinthian messenger on the mountain. The chain of evidence is closing."
   },
-
   "ending": {
     "q": "Why does Oedipus say he was 'blind' before, but now will 'truly see'?",
     "options": [
@@ -69,7 +64,6 @@
     "correct": 1,
     "explain": "The whole tragedy turns on this: Oedipus had perfect eyes but was blind to the truth. Tiresias was blind in the eyes but saw everything. The play's central image."
   },
-
   "tiresias_scene": {
     "q": "Tiresias says 'noli quaerere' — what does this mean?",
     "options": [
@@ -81,7 +75,6 @@
     "correct": 1,
     "explain": "Noli + infinitive is the standard way to say 'do not...' in Latin. Quaerere = 'to ask / to seek'. Tiresias is warning Oedipus to stop investigating."
   },
-
   "pastor_speaks": {
     "q": "What does the shepherd reveal about Oedipus?",
     "options": [
@@ -92,5 +85,16 @@
     ],
     "correct": 2,
     "explain": "The shepherd was given the baby by Jocasta to leave on the mountain — but he saved the baby and gave it to the Corinthian messenger. The 'son of Corinth' is really the son of Thebes."
+  },
+  "reckoning": {
+    "q": "Which choice reflects the canonical Sophocles ending — the one most readers expect?",
+    "options": [
+      "Deny everything — remain king",
+      "Have Tiresias killed",
+      "Blind yourself and accept the gods' justice",
+      "Pronounce your own exile and save Thebes"
+    ],
+    "correct": 2,
+    "explain": "In Sophocles, Oedipus blinds himself when the truth is revealed and asks to be exiled. The other three branches here are 'what-ifs' that explore the same fate from different character flaws."
   }
 }

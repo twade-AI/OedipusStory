@@ -21,7 +21,25 @@
     clues: [],
     charsMet: new Set(),
     quizDone: {},      // { sceneId: 'correct' | 'wrong' }
+    traits: {},        // { tag: count } — accumulated through choices
+    endingsSeen: [],   // ending scene IDs the student has reached, persisted across resets
     view: 'story',
+  };
+
+  const TRAIT_LABELS = {
+    patient:    { la: "patientia",   en: "patience" },
+    confront:   { la: "ira",         en: "confrontation" },
+    proud:      { la: "superbia",    en: "pride" },
+    pious:      { la: "pietas",      en: "piety" },
+    compassion: { la: "humanitas",   en: "compassion" },
+    denial:     { la: "negatio",     en: "denial" },
+  };
+  const ENDING_IDS = ['ending', 'ending_hubris', 'ending_denial', 'ending_dignity'];
+  const ENDING_LABELS = {
+    ending:          { la: "Veritas videns",  en: "The classical fate" },
+    ending_hubris:   { la: "Furor regis",     en: "A king's madness" },
+    ending_denial:   { la: "Casus regis",     en: "A king's fall" },
+    ending_dignity:  { la: "Pietas regis",    en: "A dignified exile" },
   };
 
   const app = document.getElementById('app');
@@ -35,6 +53,8 @@
         clues: state.clues,
         charsMet: [...state.charsMet],
         quizDone: state.quizDone,
+        traits: state.traits,
+        endingsSeen: state.endingsSeen,
       }));
     } catch (_) { /* private mode etc. */ }
   }
@@ -49,6 +69,8 @@
         state.clues = Array.isArray(s.clues) ? s.clues : [];
         state.charsMet = new Set(Array.isArray(s.charsMet) ? s.charsMet : []);
         state.quizDone = s.quizDone && typeof s.quizDone === 'object' ? s.quizDone : {};
+        state.traits = s.traits && typeof s.traits === 'object' ? s.traits : {};
+        state.endingsSeen = Array.isArray(s.endingsSeen) ? s.endingsSeen : [];
       }
     } catch (_) { /* ignore */ }
   }
@@ -154,7 +176,7 @@
         <div class="narrative">${latinize(scene.latin)}</div>
         ${quizHtml}
         ${isEnding
-          ? `<div class="ending-banner">FINIS — fabula completa est.</div>`
+          ? `<div class="ending-banner">FINIS — fabula completa est.</div>${renderEndingFooter()}`
           : `
             <div class="translatable">
               <p class="question">${latinize(scene.question)}<button type="button" class="reveal-toggle" aria-pressed="false" aria-label="Reveal English translation">en</button></p>
@@ -173,6 +195,12 @@
         if (choice.clue && !state.clues.includes(choice.clue)) {
           state.clues.push(choice.clue);
         }
+        // Accumulate behavioural traits.
+        if (Array.isArray(choice.tags)) {
+          choice.tags.forEach(tag => {
+            state.traits[tag] = (state.traits[tag] || 0) + 1;
+          });
+        }
         state.current = choice.next;
         save();
         render();
@@ -180,7 +208,51 @@
       });
     });
 
+    // On reaching an ending: log it (de-duped) so a Fates Known panel
+    // can show progress across replays.
+    if (isEnding && !state.endingsSeen.includes(state.current)) {
+      state.endingsSeen.push(state.current);
+    }
+
     save();
+  }
+
+  // Render a small "Fates known" + "Your path was…" panel inside ending scenes.
+  function renderEndingFooter() {
+    const seen = state.endingsSeen.length;
+    const total = ENDING_IDS.length;
+    const sortedTraits = Object.entries(state.traits)
+      .filter(([, n]) => n > 0)
+      .sort((a, b) => b[1] - a[1])
+      .slice(0, 3);
+    const traitChips = sortedTraits.length
+      ? sortedTraits.map(([tag]) => {
+          const lbl = TRAIT_LABELS[tag] || { la: tag, en: tag };
+          return `<span class="trait-chip"><span class="trait-la">${escapeHtml(lbl.la)}</span><span class="trait-en">${escapeHtml(lbl.en)}</span></span>`;
+        }).join('')
+      : '<span class="trait-chip muted">—</span>';
+
+    const fatesList = ENDING_IDS.map(id => {
+      const lbl = ENDING_LABELS[id];
+      const got = state.endingsSeen.includes(id);
+      const cls = got ? 'fate-known' : 'fate-unknown';
+      const mark = got ? '✓' : '·';
+      return `<li class="${cls}"><span class="fate-mark">${mark}</span><span class="fate-la">${escapeHtml(lbl.la)}</span><span class="fate-en">${escapeHtml(lbl.en)}</span></li>`;
+    }).join('');
+
+    return `
+      <section class="ending-footer" aria-label="Reflection">
+        <div class="ending-traits">
+          <p class="ending-label">animus tuus erat <em>your character was</em></p>
+          <div class="trait-chips">${traitChips}</div>
+        </div>
+        <div class="ending-fates">
+          <p class="ending-label">fata cognita <em>fates known</em> &nbsp;${seen} / ${total}</p>
+          <ul class="fate-list">${fatesList}</ul>
+          ${seen < total ? '<p class="ending-hint"><em>Press Iterum to play again — different choices lead to different fates.</em></p>' : '<p class="ending-hint"><em>You have walked all four paths. Magnum opus.</em></p>'}
+        </div>
+      </section>
+    `;
   }
 
   function renderQuiz(sceneId, quiz) {
@@ -355,12 +427,15 @@
     btn.addEventListener('click', () => setView(btn.dataset.view));
   });
   document.getElementById('reset-btn').addEventListener('click', () => {
-    if (!confirm('Reset the story? All progress will be lost.')) return;
+    if (!confirm('Reset the story? Your unlocked fates and characters seen so far will be kept.')) return;
     state.current = 'start';
     state.history = [];
     state.clues = [];
     state.charsMet = new Set();
     state.quizDone = {};
+    state.traits = {};
+    // endingsSeen intentionally preserved across replays so students can
+    // see their progress through all four fates.
     save();
     setView('story');
   });
