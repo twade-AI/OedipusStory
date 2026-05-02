@@ -11,8 +11,55 @@
       "questionEn": "English translation of question",
       "chars": "Array of character IDs present in this scene (unlocks their cards)",
       "choices": "Array of choices, each with latin, en, next, clue",
-      "isEnding": "true if this is a story ending (no choices)"
+      "isEnding": "true if this is a story ending (no choices)",
+      "sceneType": "Optional. 'riddle' triggers the multiple-choice riddle renderer instead of the standard branching scene.",
+      "options": "For sceneType=riddle: array of options with latin/en/correct/(feedback or hint) Latin+English.",
+      "next": "For sceneType=riddle: scene id to enter after the correct answer."
     }
+  },
+  "sphinx_riddle": {
+    "title": "Aenigma Sphingis",
+    "titleEn": "The Sphinx's Riddle",
+    "chapter": "Prologus",
+    "setting": "the road to Thebes — the Sphinx waits on a stone outcrop",
+    "sceneType": "riddle",
+    "latin": "Sphinx te exspectat. monstrum est. multos viros iam necavit. dicit: 'iuvenis, audi aenigma meum: quid mane quattuor pedibus ambulat, meridie duobus, vespere tribus? responde — aut moreris.'",
+    "question": "quid est, iuvenis?",
+    "questionEn": "Answer the Sphinx — what is it?",
+    "chars": [
+      "oedipus"
+    ],
+    "options": [
+      {
+        "latin": "homo",
+        "en": "a human",
+        "correct": true,
+        "feedbackLatin": "macte, iuvenis! homo est. infans quattuor pedibus repit, vir stat duobus, senex baculo ambulat. Sphinx vincitur. nunc ad Thebas eo — rex futurus.",
+        "feedbackEn": "Well done! It is a human. As a baby crawling on four, as an adult standing on two, as an old man walking with a staff. The Sphinx is defeated. Now you go to Thebes — a future king."
+      },
+      {
+        "latin": "leo",
+        "en": "a lion",
+        "correct": false,
+        "hintLatin": "non est leo. leo semper quattuor pedibus stat. cogita de aetate hominis.",
+        "hintEn": "It is not a lion. A lion always stands on four feet. Think about the ages of a human."
+      },
+      {
+        "latin": "Sphinx",
+        "en": "the Sphinx",
+        "correct": false,
+        "hintLatin": "non est ipsa Sphinx. sed quid mutat formas per aetatem?",
+        "hintEn": "It is not the Sphinx herself. But what changes form through the ages?"
+      },
+      {
+        "latin": "deus",
+        "en": "a god",
+        "correct": false,
+        "hintLatin": "non est deus. cogita de aetate hominis.",
+        "hintEn": "It is not a god. Think about the ages of a human's life."
+      }
+    ],
+    "next": "start"
   },
   "start": {
     "title": "Thebae in periculo",
