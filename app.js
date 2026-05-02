@@ -26,8 +26,18 @@
     sphinxSolved: false, // once the Sphinx is defeated, replays skip the prologue
     mode: 'discipulus',  // 'tiro' (all English visible) | 'discipulus' (reveal on tap) | 'magister' (Latin only)
     chaptersSeen: [],  // chapter labels for which the chorus has been shown this playthrough
+    wordStats: {},     // { word: { encountered: N, clicked: M } } — cumulative across all replays
     view: 'story',
   };
+
+  // A word counts as "mastered" once the student has met it ≥3 times AND
+  // didn't need a gloss for the majority of those encounters.
+  const MASTERY_MIN_ENCOUNTERS = 3;
+  const MASTERY_MAX_CLICK_RATIO = 0.34;
+  function isMastered(stats) {
+    if (!stats || stats.encountered < MASTERY_MIN_ENCOUNTERS) return false;
+    return (stats.clicked / stats.encountered) <= MASTERY_MAX_CLICK_RATIO;
+  }
 
   const TRAIT_LABELS = {
     patient:    { la: "patientia",   en: "patience" },
@@ -61,6 +71,7 @@
         sphinxSolved: state.sphinxSolved,
         mode: state.mode,
         chaptersSeen: state.chaptersSeen,
+        wordStats: state.wordStats,
       }));
     } catch (_) { /* private mode etc. */ }
   }
@@ -86,6 +97,7 @@
           state.mode = s.mode;
         }
         if (Array.isArray(s.chaptersSeen)) state.chaptersSeen = s.chaptersSeen;
+        if (s.wordStats && typeof s.wordStats === 'object') state.wordStats = s.wordStats;
       }
     } catch (_) { /* ignore */ }
   }
@@ -145,6 +157,9 @@
     }
     if (!state.history.includes(state.current)) {
       state.history.push(state.current);
+      // First visit — count encounters for every Latin word in the scene
+      // so the Verba tab can surface mastery progress over time.
+      countEncounters(scene);
     }
 
     // Riddle-type scenes go through their own renderer.
@@ -252,6 +267,39 @@
 
   // Compute a running quiz score from state.quizDone. Returns { correct, answered }.
   // Excludes the sphinx_riddle (it's a one-time gate, not a comprehension quiz).
+  // Increment the click count for the word inside a .lat span.
+  function trackWordClick(lat) {
+    const w = cleanWord(lat.textContent);
+    if (!w || !data.vocab || !data.vocab[w]) return;
+    if (!state.wordStats[w]) state.wordStats[w] = { encountered: 0, clicked: 0 };
+    state.wordStats[w].clicked++;
+    save();
+  }
+
+  // Walk every Latin token in a scene and increment its "encountered" stat.
+  // Called once the first time the student visits a scene.
+  function countEncounters(scene) {
+    if (!scene || !data.vocab) return;
+    const texts = [];
+    if (scene.title) texts.push(scene.title);
+    if (scene.latin) texts.push(scene.latin);
+    if (scene.question) texts.push(scene.question);
+    (scene.choices || []).forEach(c => { if (c.latin) texts.push(c.latin); });
+    (scene.options || []).forEach(o => {
+      if (o.latin) texts.push(o.latin);
+      if (o.feedbackLatin) texts.push(o.feedbackLatin);
+      if (o.hintLatin) texts.push(o.hintLatin);
+    });
+    const seenInScene = new Set();
+    texts.join(' ').split(/(\s+|[.,!?;:"'’“”—–()])/).forEach(tok => {
+      const w = cleanWord(tok);
+      if (!w || !data.vocab[w] || seenInScene.has(w)) return;
+      seenInScene.add(w);
+      if (!state.wordStats[w]) state.wordStats[w] = { encountered: 0, clicked: 0 };
+      state.wordStats[w].encountered++;
+    });
+  }
+
   // Greek chorus interlude — shown the first time a chapter is entered in a
   // playthrough. Returns HTML or an empty string. The chapter label is
   // recorded in state.chaptersSeen so the chorus only appears once per
@@ -631,36 +679,57 @@
   }
 
   function renderVocab() {
-    // Walk every visited scene + every clue. Tokenise everything Latin-bearing.
     const vocab = data.vocab || {};
-    const seen = new Set();
+    const stats = state.wordStats || {};
+    const words = Object.keys(stats).filter(w => stats[w].encountered > 0 && vocab[w]).sort();
 
-    const harvest = (text) => {
-      if (!text) return;
-      text.split(/(\s+|[.,!?;:"'’“”—–()])/).forEach(tok => {
-        const clean = cleanWord(tok);
-        if (clean && vocab[clean]) seen.add(clean);
-      });
-    };
-
-    state.history.forEach(id => {
-      const sc = data.scenes[id];
-      if (!sc) return;
-      harvest(sc.title);
-      harvest(sc.latin);
-      harvest(sc.question);
-      (sc.choices || []).forEach(ch => harvest(ch.latin));
-    });
-    state.clues.forEach(harvest);
-
-    if (seen.size === 0) {
+    if (words.length === 0) {
       app.innerHTML = `<p class="empty">No vocabulary encountered yet.</p>`;
       return;
     }
 
-    const sorted = [...seen].sort();
-    const rows = sorted.map(w => `<dt>${escapeHtml(w)}</dt><dd>${escapeHtml(vocab[w])}</dd>`).join('');
-    app.innerHTML = `<dl class="vocab-grid">${rows}</dl>`;
+    const masteredCount = words.filter(w => isMastered(stats[w])).length;
+    const totalEncountered = words.length;
+    const masteryPct = totalEncountered === 0 ? 0 : Math.round((masteredCount / totalEncountered) * 100);
+
+    const rows = words.map(w => {
+      const s = stats[w];
+      const mastered = isMastered(s);
+      const cls = mastered ? 'word-mastered' : (s.encountered >= MASTERY_MIN_ENCOUNTERS ? 'word-learning' : 'word-new');
+      const ratio = s.encountered === 0 ? 0 : Math.round((s.clicked / s.encountered) * 100);
+      const mark = mastered ? '★' : (s.clicked === 0 && s.encountered > 0 ? '✓' : '·');
+      const title = `Encountered ${s.encountered}× · clicked for help ${s.clicked}× (${ratio}%)`;
+      return `
+        <div class="vocab-row ${cls}" title="${escapeHtml(title)}">
+          <span class="vocab-mark" aria-hidden="true">${mark}</span>
+          <span class="vocab-word">${escapeHtml(w)}</span>
+          <span class="vocab-meaning">${escapeHtml(vocab[w])}</span>
+          <span class="vocab-stats">${s.encountered}<span class="sep">·</span>${s.clicked}</span>
+        </div>
+      `;
+    }).join('');
+
+    app.innerHTML = `
+      <div class="vocab-summary">
+        <div class="vocab-summary-stat">
+          <p class="vocab-summary-label">verba cognita <em>words mastered</em></p>
+          <p class="vocab-summary-number"><span class="num-correct">${masteredCount}</span><span class="num-divider">/</span><span class="num-total">${totalEncountered}</span></p>
+          <div class="vocab-progress" role="progressbar" aria-valuenow="${masteryPct}" aria-valuemin="0" aria-valuemax="100">
+            <div class="vocab-progress-fill" style="width:${masteryPct}%"></div>
+          </div>
+        </div>
+        <p class="vocab-summary-hint">A word is <em>cognitum</em> once you have met it ${MASTERY_MIN_ENCOUNTERS}+ times and asked for the gloss less than a third of the time. Stats persist across replays.</p>
+      </div>
+      <div class="vocab-list">
+        <div class="vocab-row vocab-header" aria-hidden="true">
+          <span class="vocab-mark"></span>
+          <span class="vocab-word">verbum</span>
+          <span class="vocab-meaning">significatio</span>
+          <span class="vocab-stats" title="encounters · clicks for help">met<span class="sep">·</span>asked</span>
+        </div>
+        ${rows}
+      </div>
+    `;
   }
 
   // --- main render dispatcher ----------------------------------------------
@@ -689,14 +758,16 @@
     }
     const lat = e.target.closest('.lat');
     if (!lat) return;
-    lat.classList.toggle('revealed');
+    const wasRevealed = lat.classList.toggle('revealed');
+    if (wasRevealed) trackWordClick(lat);
   });
   document.addEventListener('keydown', (e) => {
     if (e.key !== 'Enter' && e.key !== ' ') return;
     const lat = e.target.closest && e.target.closest('.lat');
     if (!lat) return;
     e.preventDefault();
-    lat.classList.toggle('revealed');
+    const wasRevealed = lat.classList.toggle('revealed');
+    if (wasRevealed) trackWordClick(lat);
   });
 
   // --- quiz click handler --------------------------------------------------
