@@ -62,121 +62,136 @@ html, body {
   background-attachment: fixed;
 }
 
-/* --- header ------------------------------------------------------------- */
-.site-header {
-  position: relative;
+/* --- compact top bar ---------------------------------------------------
+   Replaces the older big banner. Brand mark, section tabs and the modus
+   selector all sit on one sticky strip so the page can give the story
+   itself the most real estate. */
+.site-bar {
+  position: sticky;
+  top: 0;
+  z-index: 10;
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 0.6rem 1rem;
+  padding: 0.55rem 1.2rem 0.6rem;
   background:
-    radial-gradient(ellipse 800px 300px at 50% 100%, rgba(184, 90, 53, 0.18), transparent 70%),
     linear-gradient(180deg, #110a05 0%, var(--bg-deep) 60%, var(--bg-deep-2) 100%);
-  color: #f3e7c8;
-  padding: 2.4rem 1rem 2rem;
-  text-align: center;
   border-bottom: 1px solid #000;
+  box-shadow: 0 2px 12px rgba(0, 0, 0, 0.18);
 }
-.header-inner { max-width: 920px; margin: 0 auto; }
-.site-eyebrow {
-  font-family: var(--display);
-  font-weight: 500;
-  letter-spacing: 0.32em;
-  text-transform: uppercase;
-  font-size: 0.72rem;
-  color: var(--bronze-bright);
-  margin: 0 0 0.6rem;
-  opacity: 0.9;
-}
-.site-logo {
-  display: block;
-  max-width: 220px;
-  width: 55%;
-  height: auto;
-  margin: 0 auto 0.85rem;
-  filter: drop-shadow(0 2px 12px rgba(0, 0, 0, 0.5));
-}
-@media (max-width: 540px) { .site-logo { max-width: 160px; width: 45%; } }
 
-.site-title {
+.site-brand {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.55rem;
+  text-decoration: none;
+  color: #f6e7bf;
+  flex-shrink: 0;
+}
+.site-brand-logo {
+  height: 48px;
+  width: auto;
+  filter: drop-shadow(0 1px 4px rgba(0, 0, 0, 0.45));
+}
+.site-brand-text {
   font-family: var(--display);
   font-weight: 900;
-  font-size: clamp(2.2rem, 6vw, 3.6rem);
-  letter-spacing: 0.06em;
-  margin: 0;
+  font-size: 1.05rem;
+  letter-spacing: 0.14em;
+  text-transform: uppercase;
   color: #f6e7bf;
-  text-shadow:
-    0 1px 0 rgba(0,0,0,0.4),
-    0 0 30px rgba(184, 90, 53, 0.25);
-  line-height: 1.05;
+  line-height: 1;
 }
-.site-title-amp {
-  display: inline-block;
-  margin: 0 0.35em;
+.site-brand-amp {
   color: var(--terracotta);
   font-weight: 500;
-  vertical-align: middle;
-  transform: translateY(-0.12em);
-}
-.site-sub {
-  margin: 0.6rem 0 0;
-  font-family: var(--serif);
-  font-style: italic;
-  color: #d6c79a;
-  font-size: 1.05rem;
-  letter-spacing: 0.02em;
-}
-.meander-rule {
-  position: absolute;
-  left: 0; right: 0; bottom: 0;
-  height: 14px;
-  background: var(--meander-bronze);
-  background-repeat: repeat-x;
-  background-position: center bottom;
-  opacity: 0.85;
+  margin: 0 0.18em;
+  display: inline-block;
+  transform: translateY(-0.04em);
 }
 
-/* --- tabs --------------------------------------------------------------- */
 .tabs {
   display: flex;
   flex-wrap: nowrap;
-  gap: 0.3rem;
-  padding: 0.65rem 1rem;
-  max-width: 920px;
-  margin: 0 auto;
-  position: sticky;
-  top: 0;
-  background: linear-gradient(180deg, var(--bg) 70%, rgba(239, 227, 198, 0));
-  z-index: 5;
+  gap: 0.25rem;
+  flex: 1 1 auto;
+  margin: 0;
+  padding: 0;
+  background: transparent;
+  border: 0;
+  position: static;
   overflow-x: auto;
   -webkit-overflow-scrolling: touch;
+  justify-content: center;
 }
 .tab {
   appearance: none;
   background: transparent;
   border: 1px solid transparent;
   border-radius: 4px;
-  padding: 0.55rem 1.05rem;
+  padding: 0.45rem 0.95rem;
   font-family: var(--display);
   font-weight: 500;
-  font-size: 0.85rem;
+  font-size: 0.82rem;
   letter-spacing: 0.16em;
   text-transform: uppercase;
-  color: var(--ink-soft);
+  color: #d6c79a;
   cursor: pointer;
-  min-height: 44px;
+  min-height: 40px;
   white-space: nowrap;
   transition: background 0.15s, color 0.15s, border-color 0.15s, box-shadow 0.15s;
 }
-.tab:hover { background: var(--bg-soft); color: var(--oxblood); }
+.tab:hover, .tab:focus-visible {
+  background: rgba(184, 90, 53, 0.14);
+  color: #f6e7bf;
+  outline: none;
+}
 .tab.active {
-  background: var(--bg-deep);
-  color: var(--bronze-bright);
+  background: var(--bronze);
+  color: var(--bg-deep);
   border-color: var(--bronze);
-  box-shadow: 0 1px 0 rgba(0,0,0,0.15), inset 0 1px 0 rgba(255,255,255,0.04);
+  box-shadow: 0 1px 0 rgba(0, 0, 0, 0.25), inset 0 1px 0 rgba(255, 255, 255, 0.18);
 }
 .tab.reset {
-  border-color: var(--rule);
-  color: var(--oxblood);
+  border-color: var(--bronze);
+  color: var(--bronze-bright);
   letter-spacing: 0.18em;
+  background: transparent;
 }
-.tab.reset:hover { background: var(--bad-bg); border-color: var(--bad); color: var(--bad); }
+.tab.reset:hover, .tab.reset:focus-visible {
+  background: rgba(122, 26, 19, 0.4);
+  border-color: var(--bad);
+  color: #f6dada;
+}
+
+.site-bar-controls {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.4rem;
+  flex-shrink: 0;
+}
+
+.meander-rule {
+  flex-basis: 100%;
+  height: 12px;
+  background: var(--meander-bronze);
+  background-repeat: repeat-x;
+  background-position: center;
+  opacity: 0.7;
+  margin: 0.5rem -1.2rem -0.6rem;
+}
+
+@media (max-width: 720px) {
+  .site-bar { padding: 0.5rem 0.9rem; gap: 0.4rem 0.6rem; }
+  .site-brand-logo { height: 40px; }
+  .site-brand-text { font-size: 0.92rem; letter-spacing: 0.1em; }
+  .tabs { flex-basis: 100%; order: 3; justify-content: flex-start; }
+  .site-bar-controls { margin-left: auto; }
+}
+@media (max-width: 480px) {
+  .site-brand-text { display: none; } /* keep logo only when very narrow */
+}
 
 /* --- main container ----------------------------------------------------- */
 .container {
@@ -454,7 +469,7 @@ html, body {
     linear-gradient(180deg, #fbf2d6 0%, #ecdfb9 100%);
   border: 1px solid var(--surface-edge);
   border-radius: 4px;
-  padding: 0.95rem 3.6rem 0.95rem 1.1rem;
+  padding: 0.95rem 6.4rem 0.95rem 1.1rem; /* room for the audio + EN pills in the corner */
   cursor: pointer;
   font: inherit;
   color: var(--ink);
@@ -649,21 +664,19 @@ body.mode-magister .reveal-toggle { display: none; }
 body.mode-magister .translatable .line-en,
 body.mode-magister .translatable.revealed .line-en { display: none; }
 
-/* Mode selector control in the tab bar. */
+/* Mode selector control in the top bar. */
 .mode-control {
   display: inline-flex;
   align-items: center;
   gap: 0.4rem;
-  margin-left: auto;
-  padding: 0 0.5rem;
   white-space: nowrap;
 }
 .mode-label {
   font-family: var(--display);
-  font-size: 0.72rem;
+  font-size: 0.7rem;
   letter-spacing: 0.18em;
   text-transform: uppercase;
-  color: var(--bronze);
+  color: var(--bronze-bright);
 }
 .mode-select {
   appearance: none;
@@ -688,11 +701,11 @@ body.mode-magister .translatable.revealed .line-en { display: none; }
   outline: 2px solid var(--bronze-bright);
   outline-offset: 2px;
 }
-/* Modus moves before Iterum on narrow screens; allow tab bar to wrap if needed. */
+/* On phones, narrow the Modus dropdown so it fits beside Iterum without
+   pushing the brand text off-screen. */
 @media (max-width: 720px) {
-  .tabs { flex-wrap: wrap; }
-  .mode-control { order: 5; flex-basis: 100%; margin-left: 0; padding: 0.3rem 0; }
-  .mode-select { width: 100%; }
+  .mode-select { min-width: 9rem; padding: 0.4rem 1.6rem 0.4rem 0.55rem; font-size: 0.72rem; }
+  .mode-label { display: none; }
 }
 
 .reveal-toggle {
@@ -733,6 +746,89 @@ body.mode-magister .translatable.revealed .line-en { display: none; }
   margin-left: 0;
   z-index: 2;
   background: rgba(255, 255, 255, 0.55);
+}
+
+/* --- Audio play buttons (Web Speech API) ----------------------------- */
+.audio-btn {
+  appearance: none;
+  background: transparent;
+  border: 1px solid var(--bronze);
+  border-radius: 999px;
+  padding: 0.18rem 0.55rem;
+  font-family: var(--display);
+  font-weight: 500;
+  font-size: 0.66rem;
+  color: var(--bronze);
+  cursor: pointer;
+  letter-spacing: 0.16em;
+  text-transform: uppercase;
+  line-height: 1.3;
+  vertical-align: middle;
+  margin-left: 0.35rem;
+  flex-shrink: 0;
+  display: inline-flex;
+  align-items: center;
+  gap: 0.25rem;
+  transition: background 0.15s, color 0.15s, border-color 0.15s, transform 0.05s;
+}
+.audio-btn:hover, .audio-btn:focus-visible {
+  background: var(--bg-soft);
+  color: var(--oxblood);
+  border-color: var(--oxblood);
+  outline: none;
+}
+.audio-btn .audio-btn-icon { font-size: 0.6rem; }
+.audio-btn.playing {
+  background: var(--oxblood);
+  color: #f6e7bf;
+  border-color: var(--oxblood);
+}
+.audio-btn.playing .audio-btn-icon::before { content: "❚❚"; }
+.audio-btn.playing .audio-btn-icon { font-size: 0.55rem; }
+/* Hide the literal ▶ inside .playing because we replaced it via ::before. */
+.audio-btn.playing .audio-btn-icon { color: transparent; position: relative; }
+.audio-btn.playing .audio-btn-icon::before {
+  content: "❚❚";
+  color: #f6e7bf;
+  position: absolute;
+  inset: 0;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+/* Choice-row audio button — sits in the top-right corner alongside the EN pill. */
+.choice-row .audio-btn {
+  position: absolute;
+  top: 10px;
+  right: 60px;
+  margin-left: 0;
+  z-index: 2;
+  background: rgba(255, 255, 255, 0.55);
+}
+
+/* Narrative box gets an audio button in the top-right corner. */
+.narrative-actions {
+  display: flex;
+  justify-content: flex-end;
+  margin: -0.4rem -0.4rem 0.5rem 0;
+}
+
+/* Chorus + epilogue tweaks so the audio pill reads well on dark bg. */
+.chorus .audio-btn {
+  border-color: var(--bronze-bright);
+  color: var(--bronze-bright);
+  background: transparent;
+}
+.chorus .audio-btn:hover, .chorus .audio-btn:focus-visible {
+  background: var(--bronze);
+  color: var(--bg-deep);
+  border-color: var(--bronze);
+}
+.chorus .audio-btn.playing {
+  background: var(--bronze-bright);
+  color: var(--bg-deep);
+  border-color: var(--bronze-bright);
 }
 
 /* --- quiz --------------------------------------------------------------- */

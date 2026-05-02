@@ -10,36 +10,38 @@
   <link rel="stylesheet" href="style.css" />
 </head>
 <body>
-  <header class="site-header" role="banner">
-    <div class="header-inner">
-      <img src="images/logo.png" alt="Oedipus Detective" class="site-logo" />
-      <p class="site-eyebrow">Thebae &nbsp;·&nbsp; Saeculum VIII a.C.n.</p>
-      <h1 class="site-title">Oedipus<span class="site-title-amp">·</span>Detective</h1>
-      <p class="site-sub"><em>fabula Latina in qua veritatem investigas</em></p>
+  <header class="site-bar" role="banner">
+    <a class="site-brand" href="./" aria-label="Oedipus Detective — home">
+      <img src="images/logo.png" alt="" class="site-brand-logo" />
+      <span class="site-brand-text">Oedipus<span class="site-brand-amp">·</span>Detective</span>
+    </a>
+
+    <nav class="tabs" role="tablist" aria-label="Sections">
+      <button class="tab active" data-view="story" role="tab" aria-selected="true">Fabula</button>
+      <button class="tab" data-view="cards" role="tab" aria-selected="false">Personae</button>
+      <button class="tab" data-view="clues" role="tab" aria-selected="false">Indicia</button>
+      <button class="tab" data-view="vocab" role="tab" aria-selected="false">Verba</button>
+    </nav>
+
+    <div class="site-bar-controls">
+      <label class="mode-control" title="Adjust English support">
+        <span class="mode-label">Modus</span>
+        <select id="mode-select" class="mode-select" aria-label="Difficulty mode — controls English support">
+          <option value="tiro">Tiro · all English visible</option>
+          <option value="discipulus" selected>Discipulus · reveal on tap</option>
+          <option value="magister">Magister · Latin only</option>
+        </select>
+      </label>
+      <button class="tab reset" id="reset-btn" title="Reset the story">Iterum</button>
     </div>
+
     <div class="meander-rule" aria-hidden="true"></div>
   </header>
-
-  <nav class="tabs" role="tablist" aria-label="Sections">
-    <button class="tab active" data-view="story" role="tab" aria-selected="true">Fabula</button>
-    <button class="tab" data-view="cards" role="tab" aria-selected="false">Personae</button>
-    <button class="tab" data-view="clues" role="tab" aria-selected="false">Indicia</button>
-    <button class="tab" data-view="vocab" role="tab" aria-selected="false">Verba</button>
-    <label class="mode-control" title="Adjust English support">
-      <span class="mode-label">Modus</span>
-      <select id="mode-select" class="mode-select" aria-label="Difficulty mode — controls English support">
-        <option value="tiro">Tiro · all English visible</option>
-        <option value="discipulus" selected>Discipulus · reveal on tap</option>
-        <option value="magister">Magister · Latin only</option>
-      </select>
-    </label>
-    <button class="tab reset" id="reset-btn" title="Reset the story">Iterum</button>
-  </nav>
 
   <main id="app" class="container" aria-live="polite"></main>
 
   <footer class="site-footer">
-    <p>Click any Latin word to reveal its meaning. Tap the <strong>EN</strong> pill to reveal a full-line translation.</p>
+    <p>Click any Latin word to reveal its meaning. Tap the <strong>EN</strong> pill to reveal a full-line translation, or the <strong>audi</strong> pill to hear the Latin read aloud.</p>
   </footer>
 
   <script src="app.js"></script>

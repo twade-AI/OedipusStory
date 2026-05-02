@@ -313,6 +313,7 @@
           <span class="choice-latin">${latinize(c.latin)}</span>
           <span class="choice-en line-en">${escapeHtml(c.en)}</span>
         </button>
+        ${audioBtnHtml(c.latin || '', 'Listen to this choice aloud')}
         <button type="button" class="reveal-toggle" aria-pressed="false" aria-label="Reveal English translation">en</button>
       </div>
     `).join('');
@@ -335,13 +336,16 @@
         ${sceneImgHtml}
         <p class="scene-chapter">${escapeHtml(scene.chapter || '')}</p>
         <div class="translatable">
-          <h2 class="scene-title">${escapeHtml(scene.title || '')}<button type="button" class="reveal-toggle" aria-pressed="false" aria-label="Reveal English translation">en</button></h2>
+          <h2 class="scene-title">${escapeHtml(scene.title || '')}${audioBtnHtml(scene.title || '', 'Listen to the title')}<button type="button" class="reveal-toggle" aria-pressed="false" aria-label="Reveal English translation">en</button></h2>
           <p class="scene-title-en line-en">${escapeHtml(scene.titleEn || '')}</p>
         </div>
         ${scene.setting ? `<p class="scene-setting">${escapeHtml(scene.setting)}</p>` : ''}
         <div class="scene-stage cast-${flanking.length}">
           ${leftFlankHtml}
-          <div class="narrative">${latinize(scene.latin)}</div>
+          <div class="narrative">
+            <div class="narrative-actions">${audioBtnHtml(scene.latin || '', 'Listen to the narrative')}</div>
+            ${latinize(scene.latin)}
+          </div>
           ${rightFlankHtml}
         </div>
         ${overflowStripHtml}
@@ -350,7 +354,7 @@
           ? `<div class="ending-banner">FINIS — fabula completa est.</div>${renderEndingFooter()}`
           : `
             <div class="translatable">
-              <p class="question">${latinize(scene.question)}<button type="button" class="reveal-toggle" aria-pressed="false" aria-label="Reveal English translation">en</button></p>
+              <p class="question">${latinize(scene.question)}${audioBtnHtml(scene.question || '', 'Listen to the question')}<button type="button" class="reveal-toggle" aria-pressed="false" aria-label="Reveal English translation">en</button></p>
               <p class="question-en line-en">${escapeHtml(scene.questionEn || '')}</p>
             </div>
             <div class="choices">${choicesHtml}</div>
@@ -434,7 +438,7 @@
     const c = data.choruses[chapter];
     return `
       <aside class="chorus translatable" aria-label="Chorus interlude">
-        <p class="chorus-eyebrow">Chorus &nbsp;·&nbsp; ${escapeHtml(chapter)}<button type="button" class="reveal-toggle" aria-pressed="false" aria-label="Reveal English translation">en</button></p>
+        <p class="chorus-eyebrow">Chorus &nbsp;·&nbsp; ${escapeHtml(chapter)}${audioBtnHtml(c.latin || '', 'Listen to the chorus')}<button type="button" class="reveal-toggle" aria-pressed="false" aria-label="Reveal English translation">en</button></p>
         <p class="chorus-latin">${latinize(c.latin)}</p>
         <p class="chorus-en line-en">${escapeHtml(c.en)}</p>
       </aside>
@@ -558,7 +562,7 @@
     const { latinLines, enLines } = buildEpilogue();
     const epilogueHtml = latinLines.map((la, i) => `
       <div class="epilogue-line translatable">
-        <p class="epilogue-latin">${latinize(la)}<button type="button" class="reveal-toggle" aria-pressed="false" aria-label="Reveal English translation">en</button></p>
+        <p class="epilogue-latin">${latinize(la)}${audioBtnHtml(la, 'Listen to this line')}<button type="button" class="reveal-toggle" aria-pressed="false" aria-label="Reveal English translation">en</button></p>
         <p class="epilogue-en line-en">${escapeHtml(enLines[i] || '')}</p>
       </div>
     `).join('');
@@ -897,6 +901,84 @@
     evaluateAchievements();
   }
 
+  // --- Latin audio (Web Speech API) ---------------------------------------
+  // Browsers rarely ship a Latin voice. Italian is a sensible fallback for
+  // ecclesiastical-style pronunciation; Spanish and Portuguese also work
+  // tolerably. We pick the best available once and reuse it.
+  let _latinVoice = null;
+  let _voicesAttempted = false;
+  function pickLatinVoice() {
+    if (!('speechSynthesis' in window)) return null;
+    const voices = window.speechSynthesis.getVoices();
+    if (!voices.length) return null;
+    const byLang = (prefix) => voices.find(v => v.lang && v.lang.toLowerCase().startsWith(prefix));
+    return byLang('la')   // explicit Latin (rare)
+        || byLang('it')   // Italian — closest classical pronunciation
+        || byLang('es')   // Spanish
+        || byLang('pt')   // Portuguese
+        || voices[0];     // anything
+  }
+  function ensureVoice() {
+    if (_latinVoice || _voicesAttempted) return _latinVoice;
+    _latinVoice = pickLatinVoice();
+    if (_latinVoice) _voicesAttempted = true;
+    return _latinVoice;
+  }
+  if ('speechSynthesis' in window) {
+    // Voices load asynchronously in some browsers.
+    window.speechSynthesis.onvoiceschanged = () => {
+      _latinVoice = pickLatinVoice();
+      _voicesAttempted = true;
+    };
+  }
+
+  // Strip the trailing ⓘ marker if present and any HTML when we read text from
+  // a DOM element.
+  function cleanLatinForSpeech(s) {
+    return String(s || '').replace(/[ⓘ]/g, '').replace(/\s+/g, ' ').trim();
+  }
+
+  let _currentUtterance = null;
+  function playLatin(text, sourceBtn) {
+    if (!('speechSynthesis' in window)) return;
+    const speech = window.speechSynthesis;
+    // Toggle off if the same button is clicked while playing.
+    if (sourceBtn && sourceBtn.classList.contains('playing')) {
+      speech.cancel();
+      sourceBtn.classList.remove('playing');
+      _currentUtterance = null;
+      return;
+    }
+    speech.cancel();
+    document.querySelectorAll('.audio-btn.playing').forEach(b => b.classList.remove('playing'));
+    const utt = new SpeechSynthesisUtterance(cleanLatinForSpeech(text));
+    const voice = ensureVoice();
+    if (voice) {
+      utt.voice = voice;
+      utt.lang = voice.lang;
+    } else {
+      utt.lang = 'la';
+    }
+    utt.rate = 0.85;       // slower than default so students can follow
+    utt.pitch = 1.0;
+    utt.onend = () => {
+      if (sourceBtn) sourceBtn.classList.remove('playing');
+      _currentUtterance = null;
+    };
+    utt.onerror = utt.onend;
+    if (sourceBtn) sourceBtn.classList.add('playing');
+    _currentUtterance = utt;
+    speech.speak(utt);
+  }
+
+  function audioBtnHtml(text, label) {
+    if (!('speechSynthesis' in window)) return '';
+    return `<button type="button" class="audio-btn" data-audio="${escapeHtml(text)}" aria-label="${escapeHtml(label || 'Listen to this Latin line')}" title="Audi — listen aloud">
+      <span class="audio-btn-icon" aria-hidden="true">▶</span>
+      <span class="audio-btn-label">audi</span>
+    </button>`;
+  }
+
   // --- grammar popover ---------------------------------------------------
   function showGrammarPopover(latEl) {
     const word = latEl.getAttribute('data-word') || latEl.textContent.replace(/ⓘ/g, '').trim();
@@ -946,6 +1028,15 @@
       e.stopPropagation();
       const lat = grammarBtn.closest('.lat');
       if (lat) showGrammarPopover(lat);
+      return;
+    }
+    // Audio play button — read the Latin aloud via Web Speech.
+    const audioBtn = e.target.closest('.audio-btn');
+    if (audioBtn) {
+      e.stopPropagation();
+      e.preventDefault();
+      const text = audioBtn.getAttribute('data-audio') || '';
+      playLatin(text, audioBtn);
       return;
     }
     const toggle = e.target.closest('.reveal-toggle');
