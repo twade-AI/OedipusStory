@@ -172,7 +172,6 @@ html, body {
   box-shadow: 0 1px 0 rgba(0,0,0,0.15), inset 0 1px 0 rgba(255,255,255,0.04);
 }
 .tab.reset {
-  margin-left: auto;
   border-color: var(--rule);
   color: var(--oxblood);
   letter-spacing: 0.18em;
@@ -181,7 +180,7 @@ html, body {
 
 /* --- main container ----------------------------------------------------- */
 .container {
-  max-width: 780px;
+  max-width: 1000px;
   margin: 0 auto;
   padding: 1.5rem 1rem 4rem;
 }
@@ -224,6 +223,112 @@ html, body {
   border-left: 3px solid var(--bronze);
   padding-left: 0.85rem;
   font-style: italic;
+}
+
+/* --- Scene stage with flanking portraits ---------------------------- */
+.scene-stage {
+  display: grid;
+  gap: 1.2rem;
+  align-items: start;
+  margin: 0 0 1.2rem;
+}
+.scene-stage.cast-0 { grid-template-columns: 1fr; }
+.scene-stage.cast-1 { grid-template-columns: minmax(140px, 180px) 1fr; }
+.scene-stage.cast-2 {
+  grid-template-columns: minmax(130px, 160px) 1fr minmax(130px, 160px);
+}
+.cast-flank {
+  margin: 0;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 0.55rem;
+  position: sticky;
+  top: 5rem; /* below the sticky tabs */
+}
+.cast-flank-frame {
+  width: 100%;
+  aspect-ratio: 4 / 5;
+  border-radius: 6px;
+  overflow: hidden;
+  background: var(--bg-deep);
+  position: relative;
+  box-shadow:
+    0 0 0 1px rgba(0, 0, 0, 0.3),
+    0 0 0 4px var(--bronze),
+    0 0 0 5px var(--bg-soft),
+    0 6px 16px rgba(0, 0, 0, 0.18);
+}
+.cast-flank-frame img {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  display: block;
+  filter: contrast(1.05) saturate(0.95);
+}
+.cast-flank-initials {
+  width: 100%;
+  height: 100%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-family: var(--display);
+  font-weight: 700;
+  font-size: 2.4rem;
+  color: #fff;
+  letter-spacing: 0.04em;
+}
+.cast-flank-name {
+  text-align: center;
+  display: flex;
+  flex-direction: column;
+  gap: 0.1rem;
+}
+.cast-flank-name-en {
+  font-family: var(--display);
+  font-weight: 700;
+  font-size: 0.9rem;
+  letter-spacing: 0.16em;
+  text-transform: uppercase;
+  color: var(--ink);
+  line-height: 1.1;
+}
+.cast-flank-name-la {
+  font-family: var(--serif);
+  font-style: italic;
+  font-size: 0.78rem;
+  color: var(--bronze);
+  line-height: 1.2;
+}
+
+@media (max-width: 720px) {
+  .scene-stage.cast-1,
+  .scene-stage.cast-2 {
+    grid-template-columns: 1fr;
+  }
+  .cast-flank {
+    position: static;
+    flex-direction: row;
+    gap: 0.7rem;
+    align-items: center;
+    background: linear-gradient(180deg, var(--surface) 0%, #ecdcb0 100%);
+    border: 1px solid var(--surface-edge);
+    border-radius: 6px;
+    padding: 0.6rem 0.8rem;
+  }
+  .cast-flank-frame {
+    width: 60px;
+    aspect-ratio: 1 / 1;
+    flex-shrink: 0;
+    box-shadow:
+      0 0 0 1px rgba(0, 0, 0, 0.3),
+      0 0 0 2px var(--bronze),
+      0 0 0 3px var(--bg-soft);
+  }
+  .cast-flank-name {
+    text-align: left;
+    align-items: flex-start;
+  }
 }
 
 /* Cast strip — small portrait medallions for characters in the scene */
@@ -576,10 +681,17 @@ body.mode-magister .translatable.revealed .line-en { display: none; }
   display: flex;
   flex-direction: column;
   overflow: hidden;
+  /* Fill the row and reserve the same minimum height across rows so every
+     character card lines up regardless of bio length. */
+  height: 100%;
+  min-height: 720px;
   box-shadow:
     0 2px 8px rgba(0, 0, 0, 0.08),
     0 0 0 1px rgba(255, 255, 255, 0.3) inset;
 }
+/* Push the catchphrase block to the bottom of the card so cards with shorter
+   bios still align visually with longer ones. */
+.card .card-phrase-block { margin-top: auto; }
 .card-portrait {
   width: 100%;
   aspect-ratio: 4 / 5;
@@ -858,6 +970,37 @@ body.mode-magister .translatable.revealed .line-en { display: none; }
 .vocab-mastered { background: linear-gradient(90deg, rgba(47, 125, 79, 0.06), transparent); }
 .vocab-learning .vocab-mark { color: var(--bronze); }
 .vocab-new .vocab-mark { color: var(--muted); }
+
+/* Grammar callout — small italic note below the meaning row. */
+.vocab-grammar {
+  grid-column: 1 / -1;
+  margin: 0.2rem 0 0.2rem 2.4rem;
+  padding: 0.45rem 0.75rem;
+  font-family: var(--serif);
+  font-style: italic;
+  font-size: 0.86rem;
+  color: var(--ink-soft);
+  background: rgba(184, 90, 53, 0.06);
+  border-left: 3px solid var(--bronze);
+  border-radius: 3px;
+  line-height: 1.5;
+}
+.vocab-grammar-mark {
+  display: inline-block;
+  font-family: var(--display);
+  color: var(--bronze);
+  font-size: 0.95rem;
+  margin-right: 0.45rem;
+  font-style: normal;
+}
+.vocab-row.has-grammar .vocab-word::after {
+  content: "ⓘ";
+  margin-left: 0.35em;
+  color: var(--bronze);
+  font-size: 0.85em;
+  font-weight: normal;
+  font-family: var(--display);
+}
 
 @media (max-width: 540px) {
   .vocab-row { grid-template-columns: 1.4rem 6rem 1fr auto; gap: 0.5rem; }
@@ -1341,6 +1484,143 @@ body.mode-magister .translatable.revealed .line-en { display: none; }
   font-size: 0.85rem;
   color: var(--ink-soft);
   font-style: italic;
+}
+
+/* --- achievements (Honores) ----------------------------------------- */
+.ending-honors {
+  background: linear-gradient(180deg, var(--surface) 0%, #ecdcb0 100%);
+  border: 1px solid var(--surface-edge);
+  border-radius: 6px;
+  padding: 1rem 1.2rem 1.1rem;
+  box-shadow: inset 0 1px 0 rgba(255,255,255,0.4);
+}
+.medallion-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(120px, 1fr));
+  gap: 0.7rem;
+  margin: 0.7rem 0 0;
+}
+.medallion {
+  margin: 0;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  text-align: center;
+  padding: 0.7rem 0.5rem;
+  border: 1px solid var(--rule);
+  border-radius: 4px;
+  background: rgba(255, 255, 255, 0.45);
+  transition: transform 0.1s, box-shadow 0.15s, border-color 0.15s;
+}
+.medallion-icon {
+  width: 44px;
+  height: 44px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  border-radius: 50%;
+  background: var(--bg-deep);
+  color: var(--muted);
+  font-family: var(--display);
+  font-weight: 700;
+  font-size: 1.4rem;
+  margin-bottom: 0.45rem;
+  border: 1px solid #000;
+}
+.medallion-name { display: flex; flex-direction: column; gap: 0.1rem; }
+.medallion-la {
+  font-family: var(--display);
+  font-weight: 700;
+  font-size: 0.78rem;
+  letter-spacing: 0.12em;
+  text-transform: uppercase;
+  color: var(--ink-soft);
+  line-height: 1.1;
+}
+.medallion-en {
+  font-family: var(--serif);
+  font-style: italic;
+  font-size: 0.74rem;
+  color: var(--muted);
+}
+.medallion.earned {
+  border-color: var(--bronze);
+  box-shadow: 0 2px 6px rgba(184, 90, 53, 0.18);
+  background: linear-gradient(180deg, #fffaf0 0%, #f1e2bb 100%);
+}
+.medallion.earned .medallion-icon {
+  background: linear-gradient(180deg, var(--bronze-bright), var(--bronze));
+  color: var(--bg-deep);
+  box-shadow: 0 2px 6px rgba(0,0,0,0.2);
+}
+.medallion.earned .medallion-la { color: var(--oxblood); }
+.medallion.earned .medallion-en { color: var(--ink); }
+.medallion.locked { opacity: 0.65; }
+
+/* --- achievement toast (slide-in notification) ----------------------- */
+.achievement-toast {
+  position: fixed;
+  top: 1rem;
+  right: 1rem;
+  max-width: 360px;
+  z-index: 100;
+  display: flex;
+  gap: 0.7rem;
+  padding: 0.8rem 1rem;
+  background: linear-gradient(180deg, #fffaf0 0%, #f1e2bb 100%);
+  border: 1px solid var(--bronze);
+  border-left: 4px solid var(--oxblood);
+  border-radius: 6px;
+  box-shadow:
+    0 8px 24px rgba(0, 0, 0, 0.22),
+    inset 0 1px 0 rgba(255,255,255,0.6);
+  transform: translateX(110%);
+  transition: transform 0.45s cubic-bezier(0.2, 0.7, 0.3, 1.1), opacity 0.4s;
+  opacity: 0;
+}
+.achievement-toast.toast-in { transform: translateX(0); opacity: 1; }
+.achievement-toast.toast-out { transform: translateX(110%); opacity: 0; }
+.achievement-toast .toast-icon {
+  width: 48px;
+  height: 48px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  border-radius: 50%;
+  background: linear-gradient(180deg, var(--bronze-bright), var(--bronze));
+  color: var(--bg-deep);
+  font-family: var(--display);
+  font-size: 1.4rem;
+  font-weight: 700;
+  flex-shrink: 0;
+  box-shadow: 0 2px 8px rgba(0,0,0,0.2);
+}
+.achievement-toast .toast-title {
+  margin: 0;
+  font-family: var(--display);
+  font-size: 0.78rem;
+  letter-spacing: 0.16em;
+  text-transform: uppercase;
+  color: var(--bronze);
+}
+.achievement-toast .toast-title strong {
+  color: var(--oxblood);
+  font-size: 1rem;
+  letter-spacing: 0.06em;
+}
+.achievement-toast .toast-desc {
+  margin: 0.25rem 0 0;
+  font-family: var(--serif);
+  font-size: 0.88rem;
+  color: var(--ink-soft);
+}
+.achievement-toast .toast-desc em {
+  font-style: italic;
+  font-weight: 600;
+  color: var(--ink);
+}
+@media (max-width: 540px) {
+  .achievement-toast { left: 1rem; right: 1rem; max-width: none; }
 }
 
 /* --- ending banner ----------------------------------------------------- */

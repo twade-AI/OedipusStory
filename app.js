@@ -27,8 +27,92 @@
     mode: 'discipulus',  // 'tiro' (all English visible) | 'discipulus' (reveal on tap) | 'magister' (Latin only)
     chaptersSeen: [],  // chapter labels for which the chorus has been shown this playthrough
     wordStats: {},     // { word: { encountered: N, clicked: M } } — cumulative across all replays
+    achievements: [],  // medallion IDs earned, cumulative across all replays
     view: 'story',
   };
+
+  // --- achievements ---------------------------------------------------------
+  // Each is keyed by id, has a Latin name, an English description, an icon
+  // glyph (kept ASCII-friendly so the existing serif rendering is fine), and a
+  // test() that runs against current state. Once awarded, an achievement stays
+  // in state.achievements forever — even if its test would no longer pass.
+  const ACHIEVEMENTS = [
+    { id: 'solver',     la: 'Solutor',     en: 'Sphinx-solver',
+      desc: 'Defeat the Sphinx in the prologue.',                    icon: 'Σ',
+      test: () => state.sphinxSolved },
+    { id: 'discipulus', la: 'Discipulus',  en: 'First fate seen',
+      desc: 'Reach any ending for the first time.',                  icon: 'Ι',
+      test: () => state.endingsSeen.length >= 1 },
+    { id: 'detective',  la: 'Detector',    en: 'All scenes visited',
+      desc: 'Visit every story scene at least once across replays.', icon: 'Δ',
+      test: () => {
+        if (!data.scenes) return false;
+        const all = Object.keys(data.scenes).filter(k => !k.startsWith('_'));
+        return all.length > 0 && all.every(id => state.history.includes(id));
+      }},
+    { id: 'magnum',     la: 'Magnum opus', en: 'All four fates known',
+      desc: 'Unlock all four endings.',                              icon: '✦',
+      test: () => state.endingsSeen.length >= 4 },
+    { id: 'audax',      la: 'Audax',       en: 'A bold path',
+      desc: 'Make 5+ confrontational choices in a single playthrough.', icon: '⚔',
+      test: () => (state.traits.confront || 0) >= 5 },
+    { id: 'patiens',    la: 'Patiens',     en: 'A patient path',
+      desc: 'Make 5+ patient choices in a single playthrough.',      icon: '◯',
+      test: () => (state.traits.patient || 0) >= 5 },
+    { id: 'sapiens',    la: 'Sapiens',     en: 'Hundred verba mastered',
+      desc: 'Master 100 Latin words across all your sessions.',      icon: '★',
+      test: () => Object.values(state.wordStats || {}).filter(s => isMastered(s)).length >= 100 },
+    { id: 'magisterMode', la: 'Magister',  en: 'Latin only',
+      desc: 'Reach an ending while in Magister mode (Latin only).',  icon: '◈',
+      test: () => state.mode === 'magister' && state.endingsSeen.length >= 1 },
+    { id: 'verus',      la: 'Verus iudex', en: 'All quizzes correct',
+      desc: 'Answer every quiz correctly in a single run (≥5 quizzes).', icon: '◊',
+      test: () => {
+        const { correct, answered } = quizScore();
+        return answered >= 5 && correct === answered;
+      }},
+    { id: 'pius',       la: 'Pius',        en: 'Pious heart',
+      desc: 'Make 4+ pious choices in a single playthrough.',        icon: '☉',
+      test: () => (state.traits.pious || 0) >= 4 },
+  ];
+
+  function evaluateAchievements() {
+    if (!data.scenes) return;
+    const newly = [];
+    for (const a of ACHIEVEMENTS) {
+      if (state.achievements.includes(a.id)) continue;
+      try {
+        if (a.test()) {
+          state.achievements.push(a.id);
+          newly.push(a);
+        }
+      } catch (_) { /* ignore */ }
+    }
+    if (newly.length) {
+      save();
+      newly.forEach(showAchievementToast);
+    }
+  }
+
+  function showAchievementToast(a) {
+    const t = document.createElement('div');
+    t.className = 'achievement-toast';
+    t.setAttribute('role', 'status');
+    t.innerHTML = `
+      <span class="toast-icon" aria-hidden="true">${escapeHtml(a.icon)}</span>
+      <div class="toast-body">
+        <p class="toast-title">Honor &middot; <strong>${escapeHtml(a.la)}</strong></p>
+        <p class="toast-desc"><em>${escapeHtml(a.en)}</em> — ${escapeHtml(a.desc)}</p>
+      </div>`;
+    document.body.appendChild(t);
+    // entrance + exit animation purely via CSS class swaps
+    requestAnimationFrame(() => t.classList.add('toast-in'));
+    setTimeout(() => {
+      t.classList.remove('toast-in');
+      t.classList.add('toast-out');
+      setTimeout(() => t.remove(), 600);
+    }, 4500);
+  }
 
   // A word counts as "mastered" once the student has met it ≥3 times AND
   // didn't need a gloss for the majority of those encounters.
@@ -72,6 +156,7 @@
         mode: state.mode,
         chaptersSeen: state.chaptersSeen,
         wordStats: state.wordStats,
+        achievements: state.achievements,
       }));
     } catch (_) { /* private mode etc. */ }
   }
@@ -98,6 +183,7 @@
         }
         if (Array.isArray(s.chaptersSeen)) state.chaptersSeen = s.chaptersSeen;
         if (s.wordStats && typeof s.wordStats === 'object') state.wordStats = s.wordStats;
+        if (Array.isArray(s.achievements)) state.achievements = s.achievements;
       }
     } catch (_) { /* ignore */ }
   }
@@ -125,7 +211,9 @@
         if (/^[.,!?;:"'’“”—–()]$/.test(token)) return escapeHtml(token);
         const clean = cleanWord(token);
         if (vocab[clean]) {
-          return `<span class="lat" tabindex="0" role="button" data-en="${escapeHtml(vocab[clean])}">${escapeHtml(token)}</span>`;
+          const entry = vocab[clean];
+          const en = typeof entry === 'string' ? entry : (entry.en || '');
+          return `<span class="lat" tabindex="0" role="button" data-en="${escapeHtml(en)}">${escapeHtml(token)}</span>`;
         }
         return escapeHtml(token);
       })
@@ -171,11 +259,33 @@
 
     const isEnding = !!scene.isEnding;
 
-    // Cast strip — small portrait medallions for characters present in this scene.
+    // Cast — up to two characters flank the narrative (left, then right);
+    // any extras drop into a small strip beneath.
     const castIds = (Array.isArray(scene.chars) ? scene.chars : []).filter(id => data.characters[id]);
-    const castHtml = castIds.length === 0 ? '' : `
-      <div class="scene-cast" aria-label="In this scene">
-        ${castIds.map(id => {
+    const flanking = castIds.slice(0, 2);
+    const overflow = castIds.slice(2);
+
+    const renderFlank = (id, side) => {
+      const c = data.characters[id];
+      const palette = COLORS[c.color] || COLORS.purple;
+      const portrait = c.image
+        ? `<img src="${escapeHtml(c.image)}" alt="${escapeHtml(c.name)}" loading="lazy" decoding="async" />`
+        : `<span class="cast-flank-initials" style="background:${palette.fill}">${escapeHtml(c.initials || '?')}</span>`;
+      return `
+        <figure class="cast-flank cast-flank-${side}" title="${escapeHtml(c.name)} — ${escapeHtml(c.titleEn)}">
+          <div class="cast-flank-frame" style="--frame-tone:${palette.fill}">${portrait}</div>
+          <figcaption class="cast-flank-name">
+            <span class="cast-flank-name-en">${escapeHtml(c.name)}</span>
+            <span class="cast-flank-name-la">${escapeHtml(c.title)}</span>
+          </figcaption>
+        </figure>`;
+    };
+    const leftFlankHtml  = flanking[0] ? renderFlank(flanking[0], 'left')  : '';
+    const rightFlankHtml = flanking[1] ? renderFlank(flanking[1], 'right') : '';
+
+    const overflowStripHtml = overflow.length === 0 ? '' : `
+      <div class="scene-cast" aria-label="Also present">
+        ${overflow.map(id => {
           const c = data.characters[id];
           const palette = COLORS[c.color] || COLORS.purple;
           const portrait = c.image
@@ -220,8 +330,12 @@
           <p class="scene-title-en line-en">${escapeHtml(scene.titleEn || '')}</p>
         </div>
         ${scene.setting ? `<p class="scene-setting">${escapeHtml(scene.setting)}</p>` : ''}
-        ${castHtml}
-        <div class="narrative">${latinize(scene.latin)}</div>
+        <div class="scene-stage cast-${flanking.length}">
+          ${leftFlankHtml}
+          <div class="narrative">${latinize(scene.latin)}</div>
+          ${rightFlankHtml}
+        </div>
+        ${overflowStripHtml}
         ${quizHtml}
         ${isEnding
           ? `<div class="ending-banner">FINIS — fabula completa est.</div>${renderEndingFooter()}`
@@ -466,7 +580,32 @@
             ${seen < total ? '<p class="ending-hint"><em>Press Iterum to play again — different choices lead to different fates.</em></p>' : '<p class="ending-hint"><em>You have walked all four paths. Magnum opus.</em></p>'}
           </div>
         </div>
+        ${renderHonorsPanel()}
       </section>
+    `;
+  }
+
+  // Earned + unearned medallions, gold for earned and muted for locked.
+  function renderHonorsPanel() {
+    const earned = state.achievements.length;
+    const total = ACHIEVEMENTS.length;
+    const tiles = ACHIEVEMENTS.map(a => {
+      const got = state.achievements.includes(a.id);
+      return `
+        <figure class="medallion ${got ? 'earned' : 'locked'}" title="${escapeHtml(a.la)} — ${escapeHtml(a.desc)}">
+          <span class="medallion-icon" aria-hidden="true">${escapeHtml(a.icon)}</span>
+          <figcaption class="medallion-name">
+            <span class="medallion-la">${escapeHtml(a.la)}</span>
+            <span class="medallion-en">${escapeHtml(a.en)}</span>
+          </figcaption>
+        </figure>
+      `;
+    }).join('');
+    return `
+      <div class="ending-honors">
+        <p class="ending-label">honores cogniti <em>medallions earned</em> &nbsp;${earned} / ${total}</p>
+        <div class="medallion-grid">${tiles}</div>
+      </div>
     `;
   }
 
@@ -699,12 +838,17 @@
       const ratio = s.encountered === 0 ? 0 : Math.round((s.clicked / s.encountered) * 100);
       const mark = mastered ? '★' : (s.clicked === 0 && s.encountered > 0 ? '✓' : '·');
       const title = `Encountered ${s.encountered}× · clicked for help ${s.clicked}× (${ratio}%)`;
+      const entry = vocab[w];
+      const meaning = typeof entry === 'string' ? entry : (entry.en || '');
+      const grammar = typeof entry === 'object' && entry.grammar ? entry.grammar : '';
+      const grammarHtml = grammar ? `<p class="vocab-grammar"><span class="vocab-grammar-mark">ⓘ</span>${escapeHtml(grammar)}</p>` : '';
       return `
-        <div class="vocab-row ${cls}" title="${escapeHtml(title)}">
+        <div class="vocab-row ${cls}${grammar ? ' has-grammar' : ''}" title="${escapeHtml(title)}">
           <span class="vocab-mark" aria-hidden="true">${mark}</span>
           <span class="vocab-word">${escapeHtml(w)}</span>
-          <span class="vocab-meaning">${escapeHtml(vocab[w])}</span>
+          <span class="vocab-meaning">${escapeHtml(meaning)}</span>
           <span class="vocab-stats">${s.encountered}<span class="sep">·</span>${s.clicked}</span>
+          ${grammarHtml}
         </div>
       `;
     }).join('');
@@ -741,6 +885,7 @@
       case 'story':
       default: renderStory(); break;
     }
+    evaluateAchievements();
   }
 
   // --- click-to-reveal: line-level translation toggle and per-word reveal --
