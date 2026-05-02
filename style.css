@@ -90,7 +90,7 @@ html, body {
   flex-shrink: 0;
 }
 .site-brand-logo {
-  height: 38px;
+  height: 48px;
   width: auto;
   filter: drop-shadow(0 1px 4px rgba(0, 0, 0, 0.45));
 }
@@ -184,7 +184,7 @@ html, body {
 
 @media (max-width: 720px) {
   .site-bar { padding: 0.5rem 0.9rem; gap: 0.4rem 0.6rem; }
-  .site-brand-logo { height: 32px; }
+  .site-brand-logo { height: 40px; }
   .site-brand-text { font-size: 0.92rem; letter-spacing: 0.1em; }
   .tabs { flex-basis: 100%; order: 3; justify-content: flex-start; }
   .site-bar-controls { margin-left: auto; }
