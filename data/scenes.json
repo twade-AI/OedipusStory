@@ -457,10 +457,30 @@
     "choices": [
       {
         "latin": "dic, nuntie! quis pater meus est?",
-        "en": "Demand the truth from the messenger.",
+        "en": "Demand the truth — who is my father?",
         "next": "messenger_reveal",
         "clue": "Polybus non pater verus",
         "tags": [
+          "patient"
+        ]
+      },
+      {
+        "latin": "tace, nuntie! Polybus pater meus erat!",
+        "en": "Refuse to listen — Polybus was your father.",
+        "next": "messenger_reveal",
+        "clue": "rex nuntium repellit",
+        "tags": [
+          "denial",
+          "proud"
+        ]
+      },
+      {
+        "latin": "cor meum tremit. dic mihi placide.",
+        "en": "Soften — your heart trembles. Ask gently.",
+        "next": "messenger_reveal",
+        "clue": "rex pavet",
+        "tags": [
+          "pious",
           "patient"
         ]
       }
@@ -481,12 +501,33 @@
     ],
     "choices": [
       {
-        "latin": "pastorem voco. ego veritatem volo.",
+        "latin": "pastorem voco. veritatem volo.",
         "en": "Summon the shepherd — I will know all.",
         "next": "pastor_speaks",
         "clue": "infans in monte inventus",
         "tags": [
+          "patient",
+          "pious"
+        ]
+      },
+      {
+        "latin": "Iocastam sequor! ne pereat!",
+        "en": "Run after Jocasta — don't let her perish!",
+        "next": "pastor_speaks",
+        "clue": "rex reginam sequitur",
+        "tags": [
+          "compassion",
           "patient"
+        ]
+      },
+      {
+        "latin": "tace, nuntie! mentiris omnia!",
+        "en": "Silence the messenger — call him a liar.",
+        "next": "pastor_speaks",
+        "clue": "rex nuntium silere iubet",
+        "tags": [
+          "denial",
+          "confront"
         ]
       }
     ]
@@ -508,9 +549,28 @@
         "latin": "ad Iocastam curro!",
         "en": "Run to find Jocasta.",
         "next": "reckoning",
-        "clue": "veritas tota nota",
+        "clue": "rex ad reginam currit",
         "tags": [
-          "patient"
+          "compassion"
+        ]
+      },
+      {
+        "latin": "vae mihi! omnia vera sunt!",
+        "en": "Cry out — all of it is true.",
+        "next": "reckoning",
+        "clue": "rex veritatem accipit",
+        "tags": [
+          "pious"
+        ]
+      },
+      {
+        "latin": "tace, pastor! mentiris!",
+        "en": "Refuse the truth — call the shepherd a liar.",
+        "next": "reckoning",
+        "clue": "rex pastorem reicit",
+        "tags": [
+          "denial",
+          "confront"
         ]
       }
     ]
