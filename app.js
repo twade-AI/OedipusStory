@@ -1050,37 +1050,76 @@
     return String(s || '').replace(/[ⓘ]/g, '').replace(/\s+/g, ' ').trim();
   }
 
-  let _currentUtterance = null;
+  // Word-gap timing — Web Speech API exposes rate but not inter-word pause.
+  // To give Year 7 students space to follow each word, we split the line into
+  // individual utterances and schedule a setTimeout pause between them.
+  const WORD_PAUSE_MS = 350;
+  const WORD_RATE = 0.75;
+
+  let _audioQueue = null; // { words, idx, btn, cancelled, timer }
+
+  function cancelAudio() {
+    if ('speechSynthesis' in window) window.speechSynthesis.cancel();
+    if (_audioQueue) {
+      _audioQueue.cancelled = true;
+      if (_audioQueue.timer) clearTimeout(_audioQueue.timer);
+      _audioQueue = null;
+    }
+    document.querySelectorAll('.audio-btn.playing').forEach(b => b.classList.remove('playing'));
+  }
+
   function playLatin(text, sourceBtn) {
     if (!('speechSynthesis' in window)) return;
-    const speech = window.speechSynthesis;
-    // Toggle off if the same button is clicked while playing.
+    // Toggle off if the same button is clicked again.
     if (sourceBtn && sourceBtn.classList.contains('playing')) {
-      speech.cancel();
-      sourceBtn.classList.remove('playing');
-      _currentUtterance = null;
+      cancelAudio();
       return;
     }
-    speech.cancel();
-    document.querySelectorAll('.audio-btn.playing').forEach(b => b.classList.remove('playing'));
-    const utt = new SpeechSynthesisUtterance(cleanLatinForSpeech(text));
-    const voice = ensureVoice();
-    if (voice) {
-      utt.voice = voice;
-      utt.lang = voice.lang;
-    } else {
-      utt.lang = 'la';
-    }
-    utt.rate = 0.4;        // very slow for Year 7 — close to the browser-imposed minimum
-    utt.pitch = 1.0;
-    utt.onend = () => {
-      if (sourceBtn) sourceBtn.classList.remove('playing');
-      _currentUtterance = null;
-    };
-    utt.onerror = utt.onend;
+    cancelAudio();
+
+    const cleaned = cleanLatinForSpeech(text);
+    // Split on whitespace; punctuation stays attached to its word so prosody
+    // around full stops still sounds natural.
+    const words = cleaned.split(/\s+/).filter(Boolean);
+    if (!words.length) return;
+
     if (sourceBtn) sourceBtn.classList.add('playing');
-    _currentUtterance = utt;
-    speech.speak(utt);
+    const voice = ensureVoice();
+    const speech = window.speechSynthesis;
+    const queue = { idx: 0, btn: sourceBtn, cancelled: false, timer: null };
+    _audioQueue = queue;
+
+    function speakNext() {
+      if (queue.cancelled || queue !== _audioQueue) return;
+      if (queue.idx >= words.length) {
+        if (sourceBtn) sourceBtn.classList.remove('playing');
+        if (_audioQueue === queue) _audioQueue = null;
+        return;
+      }
+      const word = words[queue.idx++];
+      const utt = new SpeechSynthesisUtterance(word);
+      if (voice) {
+        utt.voice = voice;
+        utt.lang = voice.lang;
+      } else {
+        utt.lang = 'la';
+      }
+      utt.rate = WORD_RATE;
+      utt.pitch = 1.0;
+      const advance = () => {
+        if (queue.cancelled || queue !== _audioQueue) return;
+        queue.timer = setTimeout(speakNext, WORD_PAUSE_MS);
+      };
+      utt.onend = advance;
+      utt.onerror = advance;
+      try {
+        speech.speak(utt);
+      } catch (_) {
+        advance();
+      }
+    }
+
+    speakNext();
   }
 
   function audioBtnHtml(text, label) {
