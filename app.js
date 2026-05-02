@@ -112,10 +112,13 @@
 
     const isEnding = !!scene.isEnding;
     const choicesHtml = (scene.choices || []).map((c, i) => `
-      <button class="choice" data-choice-index="${i}">
-        <span class="choice-latin">${latinize(c.latin)}</span>
-        <span class="choice-en">${escapeHtml(c.en)}</span>
-      </button>
+      <div class="choice-row translatable">
+        <button class="choice" data-choice-index="${i}">
+          <span class="choice-latin">${latinize(c.latin)}</span>
+          <span class="choice-en line-en">${escapeHtml(c.en)}</span>
+        </button>
+        <button type="button" class="reveal-toggle" aria-pressed="false" aria-label="Reveal English translation">en</button>
+      </div>
     `).join('');
 
     const quiz = data.quizzes && data.quizzes[state.current];
@@ -124,16 +127,20 @@
     app.innerHTML = `
       <article class="scene">
         <p class="scene-chapter">${escapeHtml(scene.chapter || '')}</p>
-        <h2 class="scene-title">${escapeHtml(scene.title || '')}</h2>
-        <p class="scene-title-en">${escapeHtml(scene.titleEn || '')}</p>
+        <div class="translatable">
+          <h2 class="scene-title">${escapeHtml(scene.title || '')}<button type="button" class="reveal-toggle" aria-pressed="false" aria-label="Reveal English translation">en</button></h2>
+          <p class="scene-title-en line-en">${escapeHtml(scene.titleEn || '')}</p>
+        </div>
         ${scene.setting ? `<p class="scene-setting">${escapeHtml(scene.setting)}</p>` : ''}
         <div class="narrative">${latinize(scene.latin)}</div>
         ${quizHtml}
         ${isEnding
           ? `<div class="ending-banner">FINIS — fabula completa est.</div>`
           : `
-            <p class="question">${latinize(scene.question)}</p>
-            <p class="question-en">${escapeHtml(scene.questionEn || '')}</p>
+            <div class="translatable">
+              <p class="question">${latinize(scene.question)}<button type="button" class="reveal-toggle" aria-pressed="false" aria-label="Reveal English translation">en</button></p>
+              <p class="question-en line-en">${escapeHtml(scene.questionEn || '')}</p>
+            </div>
             <div class="choices">${choicesHtml}</div>
           `}
       </article>
@@ -210,19 +217,20 @@
         <article class="card">
           <header class="card-head">
             <div class="avatar" style="background:${palette.fill}">${escapeHtml(c.initials || '?')}</div>
-            <div>
+            <div class="translatable card-title-block">
               <h3 class="card-name">${escapeHtml(c.name)}</h3>
-              <p class="card-title">${escapeHtml(c.title)} — <em>${escapeHtml(c.titleEn)}</em></p>
+              <p class="card-title">${escapeHtml(c.title)}<button type="button" class="reveal-toggle" aria-pressed="false" aria-label="Reveal English translation">en</button></p>
+              <p class="card-title-en line-en"><em>${escapeHtml(c.titleEn)}</em></p>
             </div>
           </header>
-          <div>
-            <p class="card-bio">${latinize(c.bio)}</p>
-            <p class="card-bio-en">${escapeHtml(c.bioEn)}</p>
+          <div class="translatable">
+            <p class="card-bio">${latinize(c.bio)}<button type="button" class="reveal-toggle" aria-pressed="false" aria-label="Reveal English translation">en</button></p>
+            <p class="card-bio-en line-en">${escapeHtml(c.bioEn)}</p>
           </div>
           <div class="stats">${statRows}</div>
-          <div>
-            <p class="card-phrase">“${latinize(c.phrase)}”</p>
-            <p class="card-phrase-en">${escapeHtml(c.phraseEn)}</p>
+          <div class="translatable">
+            <p class="card-phrase">“${latinize(c.phrase)}”<button type="button" class="reveal-toggle" aria-pressed="false" aria-label="Reveal English translation">en</button></p>
+            <p class="card-phrase-en line-en">${escapeHtml(c.phraseEn)}</p>
           </div>
         </article>
       `;
@@ -283,18 +291,29 @@
     }
   }
 
-  // --- click-to-reveal Latin (event delegation) ----------------------------
+  // --- click-to-reveal: line-level translation toggle and per-word reveal --
   document.addEventListener('click', (e) => {
-    const target = e.target.closest('.lat');
-    if (!target) return;
-    target.classList.toggle('revealed');
+    const toggle = e.target.closest('.reveal-toggle');
+    if (toggle) {
+      e.stopPropagation();
+      const container = toggle.closest('.translatable');
+      if (!container) return;
+      const revealed = container.classList.toggle('revealed');
+      container.querySelectorAll('.reveal-toggle').forEach(t =>
+        t.setAttribute('aria-pressed', String(revealed))
+      );
+      return;
+    }
+    const lat = e.target.closest('.lat');
+    if (!lat) return;
+    lat.classList.toggle('revealed');
   });
   document.addEventListener('keydown', (e) => {
     if (e.key !== 'Enter' && e.key !== ' ') return;
-    const target = e.target.closest && e.target.closest('.lat');
-    if (!target) return;
+    const lat = e.target.closest && e.target.closest('.lat');
+    if (!lat) return;
     e.preventDefault();
-    target.classList.toggle('revealed');
+    lat.classList.toggle('revealed');
   });
 
   // --- quiz click handler --------------------------------------------------
