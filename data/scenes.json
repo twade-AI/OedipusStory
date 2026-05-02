@@ -144,7 +144,8 @@
           "compassion"
         ]
       }
-    ]
+    ],
+    "sceneImage": "images/scenes/pythian_delphi.jpg"
   },
   "tiresias_early": {
     "title": "Vates caecus",
@@ -297,7 +298,8 @@
           "patient"
         ]
       }
-    ]
+    ],
+    "sceneImage": "images/scenes/oracle_chamber.jpg"
   },
   "creon_quarrel": {
     "title": "Cum Creone",
@@ -443,7 +445,8 @@
           "patient"
         ]
       }
-    ]
+    ],
+    "sceneImage": "images/scenes/jocasta_chamber.jpg"
   },
   "messenger_arrives": {
     "title": "Nuntius ex Corintho",
@@ -678,7 +681,8 @@
       "creon"
     ],
     "isEnding": true,
-    "choices": []
+    "choices": [],
+    "sceneImage": "images/scenes/eumenides_grove.jpg"
   },
   "ending": {
     "title": "Veritas videns",
